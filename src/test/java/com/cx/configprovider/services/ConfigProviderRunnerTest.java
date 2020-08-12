@@ -15,5 +15,5 @@ import org.junit.runner.RunWith;
         tags = "not @Skip"
     )
 
-public class configurationProviderRunner {
+public class ConfigProviderRunnerTest {
 }

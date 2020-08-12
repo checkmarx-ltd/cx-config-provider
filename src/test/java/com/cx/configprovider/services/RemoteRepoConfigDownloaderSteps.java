@@ -21,7 +21,7 @@ import java.util.Properties;
 import static org.junit.Assert.*;
 
 
-public class RemoteRepoConfigDownloaderTest {
+public class RemoteRepoConfigDownloaderSteps {
     private static final String GITHUB_REPO = "Cx-FlowRepo";
     private static final String GITHUB_NAMESPACE = "cxflowtestuser";
     private static final String BRANCH = "orly-config-provider-tests";
