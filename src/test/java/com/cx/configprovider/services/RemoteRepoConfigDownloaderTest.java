@@ -15,7 +15,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 
 import java.util.Properties;
 
@@ -23,7 +22,13 @@ import static org.junit.Assert.*;
 
 
 public class RemoteRepoConfigDownloaderTest {
+    private static final String GITHUB_REPO = "Cx-FlowRepo";
+    private static final String GITHUB_NAMESPACE = "cxflowtestuser";
+    private static final String BRANCH = "orly-config-provider-tests";
+    private static final String GITHUB_TOKEN = "github.token";
+    private static final String GITHUB_API_URL = "https://api.github.com";
     static Properties props;
+    private static SourceProviderType providerType;
     private RawConfigAsCode config;
     private Exception exception;
 
@@ -33,18 +38,27 @@ public class RemoteRepoConfigDownloaderTest {
         props = propertyLoader.getProperties();
     }
 
-    @When("given {string} is provided to configuration provider")
+    @When("repository source is GITHUB")
+    public void setRepositorySource(){
+        providerType = SourceProviderType.GITHUB;
+        exception = null;
+    }
+
+    
+    @Then ("configuration provider will retrieve the configuration {string} from repository")
     public void setPath(String path){
         try {
             config = getConfigFromPath(path);
         } catch (Exception e) {
             exception = e;
-         }
+        }
     }
-    
-    @Then("The the returned configuration object will be {string}")
+    @And("the the returned configuration object will be {string}")
     public void checkOutput(String expected) {
-        if(config == null){
+        if(exception!=null){
+            return;
+        }
+        else if(config == null){
             fail("config not populated");
         }
         else if(expected.equals("empty")){
@@ -60,53 +74,6 @@ public class RemoteRepoConfigDownloaderTest {
             assertEquals("Unexpected exception type.", ConfigProviderException.class, exception.getClass());
         }
     }
-//
-//    @Test
-//    public void getConfigAsCode_directoryWithSingleFile_hasContent() {
-//        RawConfigAsCode config = getConfigFromPath(".checkmarx");
-//        assertNonEmptyContent(config);
-//    }
-//
-//    @Test
-//    public void getConfigAsCode_deepDirectory_hasContent() {
-//        RawConfigAsCode config = getConfigFromPath("deep/directory/structure");
-//        assertNonEmptyContent(config);
-//    }
-//
-//    @Test
-//    public void getConfigAsCode_nonExistingPath_emptyContent() {
-//        RawConfigAsCode config = getConfigFromPath("inexistence");
-//        assertEmptyContent(config);
-//    }
-//
-//    @Test
-//    public void getConfigAsCode_fileInsteadOfDirectory_emptyContent() {
-//        RawConfigAsCode config = getConfigFromPath(".checkmarx/config-as-code.yml");
-//        assertEmptyContent(config);
-//    }
-//
-//    @Test
-//    public void getConfigAsCode_directoryWithoutFiles_emptyContent() {
-//        RawConfigAsCode config = getConfigFromPath("deep/directory");
-//        assertEmptyContent(config);
-//    }
-//
-//    @Test
-//    public void getConfigAsCode_emptyFile_emptyContent() {
-//        RawConfigAsCode config = getConfigFromPath("directory-with-empty-file");
-//        assertEmptyContent(config);
-//    }
-//
-//    @Test
-//    public void getConfigAsCode_directoryWithMultipleFiles_exception() {
-//        try {
-//            getConfigFromPath("config-as-code-test");
-//            fail("Expected an exception to be thrown.");
-//        } catch (Exception e) {
-//   
-//            assertEquals("Unexpected exception type.", ConfigProviderException.class, e.getClass());
-//        }
-//    }
 
     private static void assertEmptyContent(RawConfigAsCode config) {
         Assert.assertTrue("Expected Config-as-code file content to be empty.", config.getContent().isEmpty());
@@ -117,14 +84,8 @@ public class RemoteRepoConfigDownloaderTest {
     }
 
     private static RawConfigAsCode getConfigFromPath(String path) {
-        RemoteRepoLocation repoLocation = RemoteRepoLocation.builder()
-                .apiBaseUrl("https://api.github.com")
-                .repoName("Cx-FlowRepo")
-                .namespace("cxflowtestuser")
-                .ref("master")
-                .accessToken(props.getProperty("github.token"))
-                .sourceProviderType(SourceProviderType.GITHUB)
-                .build();
+
+        RemoteRepoLocation repoLocation = getRemoteRepoLocation();
 
         ConfigLocation location = ConfigLocation.builder()
                 .path(path)
@@ -138,5 +99,22 @@ public class RemoteRepoConfigDownloaderTest {
         assertNotNull("File content must always be non-null.", result.getContent());
 
         return result;
+    }
+
+    private static RemoteRepoLocation getRemoteRepoLocation() {
+        RemoteRepoLocation repoLocation;
+        if(SourceProviderType.GITHUB.equals(providerType)) {
+             repoLocation = RemoteRepoLocation.builder()
+                    .apiBaseUrl(GITHUB_API_URL)
+                    .repoName(GITHUB_REPO)
+                    .namespace(GITHUB_NAMESPACE)
+                    .ref(BRANCH)
+                    .accessToken(props.getProperty(GITHUB_TOKEN))
+                    .sourceProviderType(SourceProviderType.GITHUB)
+                    .build();
+        }else{
+            throw new UnsupportedOperationException();
+        }
+        return repoLocation;
     }
 }

@@ -1,8 +1,9 @@
 Feature: Configuration provider git path tests
 
-Scenario Outline: Add two numbers
-    When given "<path>" is provided to configuration provider
-    Then The the returned configuration object will be "<expected>"
+Scenario Outline: repository source is GITHUB
+    When repository source is GITHUB
+    Then configuration provider will retrieve the configuration "<path>" from repository
+    And the the returned configuration object will be "<expected>"
     And exception will be "<exception_thrown>"
 
     Examples:
