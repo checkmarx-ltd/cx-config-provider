@@ -22,9 +22,9 @@ import static org.junit.Assert.*;
 
 
 public class RemoteRepoConfigDownloaderSteps {
-    private static final String GITHUB_REPO = "Cx-FlowRepo";
+    private static final String GITHUB_REPO = "configProviderTests";
     private static final String GITHUB_NAMESPACE = "cxflowtestuser";
-    private static final String BRANCH = "orly-config-provider-tests";
+    private static final String BRANCH = "test1";
     private static final String GITHUB_TOKEN = "github.token";
     private static final String GITHUB_API_URL = "https://api.github.com";
     static Properties props;
