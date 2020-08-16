@@ -84,9 +84,6 @@ workflows:
       - test:
           requires:
             - build
-      - sonar:
-          requires:
-            - build
       - publish:
           filters:
             branches:
