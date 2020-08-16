@@ -23,8 +23,7 @@
     </licenses>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mvn-gpg.passphrase>Checkmarx123456</mvn-gpg.passphrase>
-        <!--SonarCloud scan -->
+         <!--SonarCloud scan -->
         <sonar.organization>checkmarx-ltd</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <slf4j.version>1.7.7</slf4j.version>
