@@ -126,12 +126,12 @@ public class RemoteRepoConfigDownloaderSteps {
     }
 
     private static String getProperty(String property) {
-        String systemPropertyName = property.toUpperCase().replaceAll("\\.", "_");
-        String systemPropertyValue = System.getProperty(systemPropertyName);
-        log.info(systemPropertyName + " : " + systemPropertyValue);
+        String envPropertyName = property.toUpperCase().replaceAll("\\.", "_").trim();
+        String envPropertyValue = System.getenv(envPropertyName);
+        log.info(envPropertyName + " : " + envPropertyValue);
         
         //if system env variable is not defined, use local secrets file
-        return StringUtils.isNotEmpty(systemPropertyValue) ? 
-                systemPropertyValue : props.getProperty(property);
+        return StringUtils.isNotEmpty(envPropertyValue) ?
+                envPropertyValue : props.getProperty(property);
     }
 }
