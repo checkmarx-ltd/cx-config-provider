@@ -4,6 +4,8 @@ import com.cx.configprovider.dto.ConfigLocation;
 import com.cx.configprovider.dto.RawConfigAsCode;
 import com.cx.configprovider.dto.SourceProviderType;
 import com.cx.configprovider.exceptions.ConfigProviderException;
+import com.cx.configprovider.services.interfaces.ConfigLoader;
+import com.cx.configprovider.services.interfaces.SourceControlClient;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
