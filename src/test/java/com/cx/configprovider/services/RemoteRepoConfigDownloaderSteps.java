@@ -15,6 +15,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
+import org.slf4j.Logger;
 
 import java.util.Properties;
 
@@ -31,6 +32,7 @@ public class RemoteRepoConfigDownloaderSteps {
     private static SourceProviderType providerType;
     private RawConfigAsCode config;
     private Exception exception;
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(RemoteRepoConfigDownloaderSteps.class);
 
     @Before()
     public static void loadProperties() {
@@ -109,12 +111,22 @@ public class RemoteRepoConfigDownloaderSteps {
                     .repoName(GITHUB_REPO)
                     .namespace(GITHUB_NAMESPACE)
                     .ref(BRANCH)
-                    .accessToken(props.getProperty(GITHUB_TOKEN))
+                    .accessToken(getProperty(GITHUB_TOKEN))
                     .sourceProviderType(SourceProviderType.GITHUB)
                     .build();
         }else{
             throw new UnsupportedOperationException();
         }
         return repoLocation;
+    }
+
+    private static String getProperty(String property) {
+        String systemPropertyName = property.toUpperCase().replaceAll(".", "_");
+        String systemPropertyValue = System.getProperty(systemPropertyName);
+        log.info(systemPropertyName + " : " + systemPropertyValue);
+        
+        //if system env variable is not defined, use local secrets file
+        return StringUtils.isNotEmpty(systemPropertyValue) ? 
+                systemPropertyValue : props.getProperty(property);
     }
 }
