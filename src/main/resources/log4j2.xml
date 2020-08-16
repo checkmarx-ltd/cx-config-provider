@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="consoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %5p [%t] (%F:%L) - %m%n"/>
+        </Console>
+        <RollingFile name="fileAppender" fileName="config.provider.log"
+                     filePattern="config.provider-%i.log" append="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %c{1} [%p] %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="50"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        
+        <Root level="info">
+            <AppenderRef ref="consoleAppender"/>
+            <AppenderRef ref="fileAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>

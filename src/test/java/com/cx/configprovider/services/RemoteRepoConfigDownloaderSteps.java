@@ -13,9 +13,11 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
@@ -23,6 +25,10 @@ import static org.junit.Assert.*;
 
 
 public class RemoteRepoConfigDownloaderSteps {
+
+    private static final Logger log = LoggerFactory.getLogger(RemoteRepoConfigDownloaderSteps.class);
+
+    
     private static final String GITHUB_REPO = "configProviderTests";
     private static final String GITHUB_NAMESPACE = "cxflowtestuser";
     private static final String BRANCH = "test1";
@@ -32,8 +38,7 @@ public class RemoteRepoConfigDownloaderSteps {
     private static SourceProviderType providerType;
     private RawConfigAsCode config;
     private Exception exception;
-    private static final Logger log = org.slf4j.LoggerFactory.getLogger(RemoteRepoConfigDownloaderSteps.class);
-
+ 
     @Before()
     public static void loadProperties() {
         TestPropertyLoader propertyLoader = new TestPropertyLoader();
@@ -121,7 +126,7 @@ public class RemoteRepoConfigDownloaderSteps {
     }
 
     private static String getProperty(String property) {
-        String systemPropertyName = property.toUpperCase().replaceAll(".", "_");
+        String systemPropertyName = property.toUpperCase().replaceAll("\\.", "_");
         String systemPropertyValue = System.getProperty(systemPropertyName);
         log.info(systemPropertyName + " : " + systemPropertyValue);
         
