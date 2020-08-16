@@ -7,43 +7,32 @@ import com.cx.configprovider.dto.SourceProviderType;
 
 
 import com.cx.configprovider.exceptions.ConfigProviderException;
-import com.cx.utility.TestPropertyLoader;
+import com.cx.configprovider.utility.PropertyLoader;
 
-import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Properties;
 
 import static org.junit.Assert.*;
 
 
 public class RemoteRepoConfigDownloaderSteps {
 
-    private static final Logger log = LoggerFactory.getLogger(RemoteRepoConfigDownloaderSteps.class);
-
+ 
     
     private static final String GITHUB_REPO = "configProviderTests";
     private static final String GITHUB_NAMESPACE = "cxflowtestuser";
     private static final String BRANCH = "test1";
     private static final String GITHUB_TOKEN = "github.token";
     private static final String GITHUB_API_URL = "https://api.github.com";
-    static Properties props;
+    static PropertyLoader props = new PropertyLoader();
     private static SourceProviderType providerType;
     private RawConfigAsCode config;
     private Exception exception;
- 
-    @Before()
-    public static void loadProperties() {
-        TestPropertyLoader propertyLoader = new TestPropertyLoader();
-        props = propertyLoader.getProperties();
-    }
+    
 
     @When("repository source is GITHUB")
     public void setRepositorySource(){
@@ -116,7 +105,7 @@ public class RemoteRepoConfigDownloaderSteps {
                     .repoName(GITHUB_REPO)
                     .namespace(GITHUB_NAMESPACE)
                     .ref(BRANCH)
-                    .accessToken(getProperty(GITHUB_TOKEN))
+                    .accessToken(props.getProperty(GITHUB_TOKEN))
                     .sourceProviderType(SourceProviderType.GITHUB)
                     .build();
         }else{
@@ -125,13 +114,4 @@ public class RemoteRepoConfigDownloaderSteps {
         return repoLocation;
     }
 
-    private static String getProperty(String property) {
-        String envPropertyName = property.toUpperCase().replaceAll("\\.", "_").trim();
-        String envPropertyValue = System.getenv(envPropertyName);
-        log.info(envPropertyName + " : " + envPropertyValue);
-        
-        //if system env variable is not defined, use local secrets file
-        return StringUtils.isNotEmpty(envPropertyValue) ?
-                envPropertyValue : props.getProperty(property);
-    }
 }
