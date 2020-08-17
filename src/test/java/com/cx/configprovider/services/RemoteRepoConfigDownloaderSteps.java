@@ -1,9 +1,6 @@
 package com.cx.configprovider.services;
 
-import com.cx.configprovider.dto.ConfigLocation;
-import com.cx.configprovider.dto.RawConfigAsCode;
-import com.cx.configprovider.dto.RemoteRepoLocation;
-import com.cx.configprovider.dto.SourceProviderType;
+import com.cx.configprovider.dto.*;
 
 
 import com.cx.configprovider.exceptions.ConfigProviderException;
@@ -15,6 +12,8 @@ import io.cucumber.java.en.When;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
+
+import javax.naming.ConfigurationException;
 
 import static org.junit.Assert.*;
 
@@ -30,7 +29,7 @@ public class RemoteRepoConfigDownloaderSteps {
     private static final String GITHUB_API_URL = "https://api.github.com";
     static PropertyLoader props = new PropertyLoader();
     private static SourceProviderType providerType;
-    private RawConfigAsCode config;
+    private ConfigResource config;
     private Exception exception;
     
 
@@ -71,15 +70,15 @@ public class RemoteRepoConfigDownloaderSteps {
         }
     }
 
-    private static void assertEmptyContent(RawConfigAsCode config) {
-        Assert.assertTrue("Expected Config-as-code file content to be empty.", config.getContent().isEmpty());
+    private static void assertEmptyContent(ConfigResource config) {
+        Assert.assertTrue("Expected Config-as-code file content to be empty.", config.getConfig().isEmpty());
     }
 
-    private static void assertNonEmptyContent(RawConfigAsCode config) {
-        assertTrue("Config-as-code file content is empty.", StringUtils.isNotEmpty(config.getContent()));
+    private static void assertNonEmptyContent(ConfigResource config) {
+        assertTrue("Config-as-code file content is empty.", !config.getConfig().isEmpty());
     }
 
-    private static RawConfigAsCode getConfigFromPath(String path) {
+    private static ConfigResource getConfigFromPath(String path) throws ConfigurationException {
 
         RemoteRepoLocation repoLocation = getRemoteRepoLocation();
 
@@ -90,10 +89,9 @@ public class RemoteRepoConfigDownloaderSteps {
 
         RemoteRepoConfigDownloader downloader = new RemoteRepoConfigDownloader();
 
-        RawConfigAsCode result = downloader.getConfigAsCode(location);
+        ConfigResource result = downloader.getConfigAsCode(location);
         assertNotNull("Config-as-code object must always be non-null.", result);
-        assertNotNull("File content must always be non-null.", result.getContent());
-
+        assertNotNull("File content must always be non-null.", result.getConfig().toString());
         return result;
     }
 

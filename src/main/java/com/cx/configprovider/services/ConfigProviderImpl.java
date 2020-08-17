@@ -17,7 +17,7 @@ public class ConfigProviderImpl implements ConfigProvider {
     @Override
     public void init(String uid, ConfigSource configSource){
 
-        JsonNode jsonNode = configSource.parseToJson();
+        JsonNode jsonNode = configSource.parse();
 
         store(uid, jsonNode);
 
