@@ -1,11 +1,11 @@
-package com.cx.configprovider.dto;
+package com.cx.configprovider.resource;
 
+import com.cx.configprovider.dto.ResourceType;
 import com.typesafe.config.Config;
 import lombok.Getter;
 
 import javax.naming.ConfigurationException;
 import java.io.File;
-import java.net.URL;
 
 /**
  * Represents a non-parsed ("raw") config-as-code.
@@ -14,9 +14,8 @@ import java.net.URL;
 
 @Getter
 public class FileResourceImpl extends ConfigResourceImpl {
-    private ResourceType type;
+;
     private File file;
-    private Config config;
     
 
     public void FileResourceImpl(ResourceType type, String filepath) throws ConfigurationException {

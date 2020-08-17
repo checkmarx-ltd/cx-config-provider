@@ -1,18 +1,10 @@
-package com.cx.configprovider.dto;
+package com.cx.configprovider.resource;
 
-import com.cx.configprovider.dto.interfaces.ConfigResource;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.cx.configprovider.dto.ResourceType;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import lombok.Getter;
-import org.apache.commons.io.IOUtils;
 
 import javax.naming.ConfigurationException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -22,9 +14,9 @@ import java.net.URL;
 
 @Getter
 public class URLResourceImpl extends ConfigResourceImpl {
-    private ResourceType type;
+ 
     private URL url;
-    private Config config;
+
     
     public void URLResourceImpl(ResourceType type, URL url) throws ConfigurationException {
         this.type = type;

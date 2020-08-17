@@ -1,6 +1,8 @@
 package com.cx.configprovider.services;
 
 import com.cx.configprovider.dto.*;
+import com.cx.configprovider.resource.FileResourceImpl;
+import com.cx.configprovider.resource.RawResourceImpl;
 import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.cx.configprovider.exceptions.ConfigProviderException;
 import com.cx.configprovider.services.interfaces.ConfigLoader;
@@ -14,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-class RemoteRepoConfigDownloader implements ConfigLoader {
+public class RemoteRepoConfigDownloader implements ConfigLoader {
     private static final int SUPPORTED_FILE_COUNT = 1;
 
     private static final EnumMap<SourceProviderType, Class<? extends SourceControlClient>> sourceProviderMapping;

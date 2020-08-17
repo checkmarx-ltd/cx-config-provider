@@ -1,5 +1,6 @@
-package com.cx.configprovider.dto;
+package com.cx.configprovider.resource;
 
+import com.cx.configprovider.dto.ResourceType;
 import com.typesafe.config.Config;
 import lombok.Getter;
 

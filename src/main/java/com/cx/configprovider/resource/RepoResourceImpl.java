@@ -1,22 +1,23 @@
-package com.cx.configprovider.services;
+package com.cx.configprovider.resource;
 
 import com.cx.configprovider.dto.ConfigLocation;
 import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.cx.configprovider.dto.RemoteRepoLocation;
+import com.cx.configprovider.services.RemoteRepoConfigDownloader;
 import com.typesafe.config.Config;
 
 import javax.naming.ConfigurationException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class RepoConfigSourceImpl implements ConfigResource {
+public class RepoResourceImpl implements ConfigResource {
 
     private Config config;
     RemoteRepoLocation repoLocation;
     RemoteRepoConfigDownloader downloader = new RemoteRepoConfigDownloader();
     List<String> pathListToSearch = new LinkedList<String>();
     
-    public RepoConfigSourceImpl(RemoteRepoLocation repoLocation){
+    public RepoResourceImpl(RemoteRepoLocation repoLocation){
         this.repoLocation = repoLocation;
         initPathList();
     }

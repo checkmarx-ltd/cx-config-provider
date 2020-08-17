@@ -1,5 +1,6 @@
-package com.cx.configprovider.dto;
+package com.cx.configprovider.resource;
 
+import com.cx.configprovider.dto.ResourceType;
 import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,7 +9,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import lombok.Getter;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.ConfigurationException;
 import java.io.File;
@@ -23,33 +23,9 @@ import java.net.URL;
 
 @Getter
 public abstract class ConfigResourceImpl implements ConfigResource{
-    private String content;
-    private ResourceType type;
-    private File file;
-    private URL url;
-    private String  name;
-    private Config config;
 
-    public ConfigResourceImpl() {    
-    }
-    
-    
-    public void parse(ResourceType type, URL url) throws ConfigurationException {
-        this.type = type;
-        this.url = url;
-        parse(url);
-    }
-    
-
-    void parse(URL url) throws ConfigurationException {
-        if(ResourceType.YML.equals(type)){
-            config = yamlToConfig(url);
-        }else if(ResourceType.JSON.equals(type)){
-            config = jsonToConfig(url);
-        }
-    }
-    
-    
+    protected ResourceType type;
+    protected Config config;
 
     Config jsonToConfig(String fileContent) {
         return ConfigFactory.parseString(fileContent);

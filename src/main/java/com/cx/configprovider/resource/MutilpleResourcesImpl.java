@@ -1,4 +1,4 @@
-package com.cx.configprovider.services;
+package com.cx.configprovider.resource;
 
 import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
@@ -7,11 +7,11 @@ import javax.naming.ConfigurationException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MutilpleResourcesConfigImpl implements ConfigResource {
+public class MutilpleResourcesImpl implements ConfigResource {
 
     List<ConfigResource> configSourceList = new LinkedList<>();
 
-    public MutilpleResourcesConfigImpl add(ConfigResource ConfigSource){
+    public MutilpleResourcesImpl add(ConfigResource ConfigSource){
         configSourceList.add(ConfigSource);
         applyOrder();
         return this;
@@ -19,6 +19,10 @@ public class MutilpleResourcesConfigImpl implements ConfigResource {
 
     private void applyOrder() {
         //TO IMPLEMENT
+        
+        //Env Yaml
+        //application.yml
+        //config-as-code
     }
     
     

@@ -13,6 +13,13 @@ public class ConfigProviderImpl implements ConfigProvider {
 
     Map<String, Config> configurationMap = new HashMap<>();
 
+    @Override
+    public void init(String uid, ConfigResource configSource, Config configToMerge) throws ConfigurationException {
+
+        Config config = configSource.parse();
+        config.withFallback(configToMerge);
+        store(uid, config);
+    }
 
     @Override
     public void init(String uid, ConfigResource configSource) throws ConfigurationException {

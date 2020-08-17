@@ -1,11 +1,14 @@
 package com.cx.configprovider.services.interfaces;
 
 import com.cx.configprovider.dto.interfaces.ConfigResource;
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 
 import javax.naming.ConfigurationException;
 
 public interface ConfigProvider {
+
+    void init(String uid, ConfigResource configSource, Config configToMerge) throws ConfigurationException;
 
     void init(String uid, ConfigResource configSource) throws ConfigurationException;
 
