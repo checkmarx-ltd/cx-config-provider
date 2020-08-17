@@ -18,7 +18,7 @@ import javax.naming.ConfigurationException;
 import static org.junit.Assert.*;
 
 
-public class RemoteRepoConfigDownloaderSteps {
+public class RemoteRepoDownloaderSteps {
 
  
     
@@ -95,7 +95,7 @@ public class RemoteRepoConfigDownloaderSteps {
                 .repoLocation(repoLocation)
                 .build();
 
-        RemoteRepoConfigDownloader downloader = new RemoteRepoConfigDownloader();
+        RemoteRepoDownloader downloader = new RemoteRepoDownloader();
 
         ConfigResource result = downloader.getConfigAsCode(location);
         assertNotNull("Config-as-code object must always be non-null.", result);

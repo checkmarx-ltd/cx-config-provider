@@ -3,7 +3,7 @@ package com.cx.configprovider.resource;
 import com.cx.configprovider.dto.ConfigLocation;
 import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.cx.configprovider.dto.RemoteRepoLocation;
-import com.cx.configprovider.services.RemoteRepoConfigDownloader;
+import com.cx.configprovider.services.RemoteRepoDownloader;
 import com.typesafe.config.Config;
 
 import javax.naming.ConfigurationException;
@@ -14,7 +14,7 @@ public class RepoResourceImpl implements ConfigResource {
 
     private Config config;
     RemoteRepoLocation repoLocation;
-    RemoteRepoConfigDownloader downloader = new RemoteRepoConfigDownloader();
+    RemoteRepoDownloader downloader = new RemoteRepoDownloader();
     List<String> pathListToSearch = new LinkedList<String>();
     
     public RepoResourceImpl(RemoteRepoLocation repoLocation){

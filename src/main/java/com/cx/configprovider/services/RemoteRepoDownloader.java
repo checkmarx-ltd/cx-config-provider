@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-public class RemoteRepoConfigDownloader implements ConfigLoader {
+public class RemoteRepoDownloader implements ConfigLoader {
     private static final int SUPPORTED_FILE_COUNT = 1;
 
     private static final EnumMap<SourceProviderType, Class<? extends SourceControlClient>> sourceProviderMapping;

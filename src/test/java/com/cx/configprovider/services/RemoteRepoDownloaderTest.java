@@ -15,5 +15,5 @@ import org.junit.runner.RunWith;
         tags = "not @Skip"
     )
 
-public class ConfigProviderRunnerTest {
+public class RemoteRepoDownloaderTest {
 }
