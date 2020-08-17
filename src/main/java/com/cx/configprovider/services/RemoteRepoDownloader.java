@@ -36,7 +36,7 @@ public class RemoteRepoDownloader implements ConfigLoader {
      * Currently no more than 1 config-as-code file is supported in a given directory.
      *
      * @param configLocation specifies a directory to get files from and repo access properties.
-     * @return a non-null instance of {@link FileResourceImpl} with config-as-code content.
+     * @return a non-null instance of {@link ConfigResource} with config-as-code content.
      * If config-as-code was not found, the instance contains an empty string.
      * @throws ConfigProviderException if more than 1 config-as-code file is found in the specified directory
      * @throws NullPointerException if configLocation or its repoLocation is null
