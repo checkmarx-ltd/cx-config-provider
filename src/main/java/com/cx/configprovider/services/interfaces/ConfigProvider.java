@@ -1,12 +1,15 @@
 package com.cx.configprovider.services.interfaces;
 
-import com.cx.configprovider.dto.ConfigObject;
-import com.cx.configprovider.dto.interfaces.ConfigProperties;
+import com.cx.configprovider.dto.interfaces.ConfigResource;
+import com.typesafe.config.ConfigObject;
+
+import javax.naming.ConfigurationException;
 
 public interface ConfigProvider {
 
-    public void init(String uid, ConfigSource configSource);
+    void init(String uid, ConfigResource configSource) throws ConfigurationException;
 
-    public ConfigObject getConfigObject(String uid, ConfigProperties propertiesToMap);
+    ConfigObject getConfigObject(String uid);
 
-    }
+    ConfigObject getConfigObjectSection(String uid, String section);
+}

@@ -1,7 +1,7 @@
 package com.cx.configprovider.services.interfaces;
 
 import com.cx.configprovider.dto.ConfigLocation;
-import com.cx.configprovider.dto.ConfigResource;
+import com.cx.configprovider.dto.interfaces.ConfigResource;
 
 import javax.naming.ConfigurationException;
 

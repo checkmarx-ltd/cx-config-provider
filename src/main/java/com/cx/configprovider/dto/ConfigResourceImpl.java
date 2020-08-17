@@ -1,5 +1,6 @@
 package com.cx.configprovider.dto;
 
+import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -21,7 +22,7 @@ import java.net.URL;
 
 
 @Getter
-public class ConfigResourceImpl implements ConfigResource{
+public abstract class ConfigResourceImpl implements ConfigResource{
     private String content;
     private ResourceType type;
     private File file;
@@ -31,43 +32,16 @@ public class ConfigResourceImpl implements ConfigResource{
 
     public ConfigResourceImpl() {    
     }
-
-    public void parse(ResourceType type, String filepath) throws ConfigurationException {
-        file = new File(filepath);
-        if(!file.exists()){
-            throw new ConfigurationException("File not found: " + filepath);
-        }
-        name  = file.getName();
-        this.type = type;
-        parse(file);
-    }
+    
     
     public void parse(ResourceType type, URL url) throws ConfigurationException {
         this.type = type;
         this.url = url;
         parse(url);
     }
- 
-    public void parse(ResourceType type, String fileContent, String name) throws ConfigurationException {
-        this.type = type;
-        this.content = fileContent;
-        this.name = name;
-        parse(type, fileContent);
-    }
     
-    boolean isContentBased(){
-        return StringUtils.isNotEmpty(content);
-    }
 
-    boolean isFileBased(){
-        return file != null;
-    }
-
-    boolean isUrlBased(){
-        return url != null;
-    }
-
-    private void parse(URL url) throws ConfigurationException {
+    void parse(URL url) throws ConfigurationException {
         if(ResourceType.YML.equals(type)){
             config = yamlToConfig(url);
         }else if(ResourceType.JSON.equals(type)){
@@ -75,27 +49,13 @@ public class ConfigResourceImpl implements ConfigResource{
         }
     }
     
-    private void parse(File file) throws ConfigurationException {
-        if(ResourceType.YML.equals(type)){
-            config = yamlToConfig(file);
-        }else if(ResourceType.JSON.equals(type)){
-            config = jsonToConfig(file);
-        }
-    }
+    
 
-    private void parse(String fileContent) throws ConfigurationException {
-        if(ResourceType.YML.equals(type)){
-            config = yamlToConfig(fileContent, "");
-        }else if(ResourceType.JSON.equals(type)){
-            config = jsonToConfig(fileContent);
-        }
-    }
-
-    private Config jsonToConfig(String fileContent) {
+    Config jsonToConfig(String fileContent) {
         return ConfigFactory.parseString(fileContent);
     }
 
-    private Config yamlToConfig(String yamlContent, String path) throws ConfigurationException {
+    Config yamlToConfig(String yamlContent, String path) throws ConfigurationException {
         try{
 
             ObjectMapper yamlReader = new ObjectMapper(new YAMLFactory());
@@ -111,20 +71,20 @@ public class ConfigResourceImpl implements ConfigResource{
     }
 
 
-    private Config jsonToConfig(File file) {
+    Config jsonToConfig(File file) {
         return ConfigFactory.parseFile(file);
     }
 
 
-    private Config jsonToConfig(URL file) {
+    Config jsonToConfig(URL file) {
         return ConfigFactory.parseURL(file);
     }
     
-    public Config yamlToConfig(URL url) throws ConfigurationException {
+    Config yamlToConfig(URL url) throws ConfigurationException {
         throw new UnsupportedOperationException();
     }
 
-    public Config yamlToConfig(File file) throws ConfigurationException {
+    Config yamlToConfig(File file) throws ConfigurationException {
 
         try {
             String yamlContent = IOUtils.toString(new FileInputStream(file.getPath()), "UTF-8");

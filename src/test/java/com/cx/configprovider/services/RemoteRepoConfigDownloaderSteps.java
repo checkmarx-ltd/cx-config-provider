@@ -3,6 +3,7 @@ package com.cx.configprovider.services;
 import com.cx.configprovider.dto.*;
 
 
+import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.cx.configprovider.exceptions.ConfigProviderException;
 import com.cx.configprovider.utility.PropertyLoader;
 
@@ -10,7 +11,6 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 
 import javax.naming.ConfigurationException;
@@ -71,11 +71,19 @@ public class RemoteRepoConfigDownloaderSteps {
     }
 
     private static void assertEmptyContent(ConfigResource config) {
-        Assert.assertTrue("Expected Config-as-code file content to be empty.", config.getConfig().isEmpty());
+        try {
+            Assert.assertTrue("Expected Config-as-code file content to be empty.", config.parse().isEmpty());
+        } catch (ConfigurationException e) {
+            Assert.fail(e.getMessage());
+        }
     }
 
     private static void assertNonEmptyContent(ConfigResource config) {
-        assertTrue("Config-as-code file content is empty.", !config.getConfig().isEmpty());
+        try {
+            assertTrue("Config-as-code file content is empty.", !config.parse().isEmpty());
+        } catch (ConfigurationException e) {
+            Assert.fail(e.getMessage());
+        }
     }
 
     private static ConfigResource getConfigFromPath(String path) throws ConfigurationException {
@@ -91,7 +99,7 @@ public class RemoteRepoConfigDownloaderSteps {
 
         ConfigResource result = downloader.getConfigAsCode(location);
         assertNotNull("Config-as-code object must always be non-null.", result);
-        assertNotNull("File content must always be non-null.", result.getConfig().toString());
+        assertNotNull("File content must always be non-null.", result.parse().toString());
         return result;
     }
 

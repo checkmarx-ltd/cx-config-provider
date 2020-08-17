@@ -1,11 +1,9 @@
 package com.cx.configprovider.services;
 
 import com.cx.configprovider.dto.ConfigLocation;
-import com.cx.configprovider.dto.ConfigResource;
-import com.cx.configprovider.dto.ConfigResourceImpl;
+import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.cx.configprovider.dto.RemoteRepoLocation;
 import com.typesafe.config.Config;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.ConfigurationException;
 import java.util.LinkedList;
@@ -27,7 +25,8 @@ public class RepoConfigSourceImpl implements ConfigResource {
         //TODO
     }
 
-    public void parse() throws ConfigurationException {
+    @Override
+    public Config parse() throws ConfigurationException {
 
         for (String path: pathListToSearch) {
             ConfigLocation location = ConfigLocation.builder()
@@ -35,17 +34,14 @@ public class RepoConfigSourceImpl implements ConfigResource {
                     .repoLocation(repoLocation)
                     .build();
 
-            ConfigResource configResource = downloader.getConfigAsCode(location);
+            Config config = downloader.getConfigAsCode(location).parse();
             
-            if(configResource.getConfig() != null){
-                config = configResource.getConfig();
+            if(config != null){
+                this.config = config;
                 break;
             }
         }
-    }
-    
-    @Override
-    public Config getConfig() {
+        
         return config;
     }
 

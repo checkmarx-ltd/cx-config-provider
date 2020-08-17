@@ -1,6 +1,7 @@
 package com.cx.configprovider.services;
 
 import com.cx.configprovider.dto.*;
+import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.cx.configprovider.exceptions.ConfigProviderException;
 import com.cx.configprovider.services.interfaces.ConfigLoader;
 import com.cx.configprovider.services.interfaces.SourceControlClient;
@@ -33,7 +34,7 @@ class RemoteRepoConfigDownloader implements ConfigLoader {
      * Currently no more than 1 config-as-code file is supported in a given directory.
      *
      * @param configLocation specifies a directory to get files from and repo access properties.
-     * @return a non-null instance of {@link ConfigResourceImpl} with config-as-code content.
+     * @return a non-null instance of {@link FileResourceImpl} with config-as-code content.
      * If config-as-code was not found, the instance contains an empty string.
      * @throws ConfigProviderException if more than 1 config-as-code file is found in the specified directory
      * @throws NullPointerException if configLocation or its repoLocation is null
@@ -90,19 +91,18 @@ class RemoteRepoConfigDownloader implements ConfigLoader {
         String fileContent = "";
         if (filenames.isEmpty()) {
             log.info("No config-as-code was found.");
-            return new ConfigResourceImpl();
+            return new FileResourceImpl();
         } else if (filenames.size() == SUPPORTED_FILE_COUNT) {
             fileContent = client.downloadFileContent(configLocation, filenames.get(0));
             log.info("Config-as-code was found with content length: {}", fileContent.length());
-            ConfigResourceImpl configResourceImpl = new ConfigResourceImpl();
-            configResourceImpl.parse(ResourceType.JSON, fileContent, filenames.get(0));
+            RawResourceImpl configResourceImpl = new RawResourceImpl(ResourceType.JSON, fileContent, filenames.get(0));
             return configResourceImpl;
          } else {
             throwInvalidCountException(filenames);
         }
 
 
-        return new ConfigResourceImpl();
+        return new FileResourceImpl();
     }
 
     private void throwInvalidCountException(List<String> filenames) {
