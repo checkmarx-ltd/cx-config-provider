@@ -21,4 +21,8 @@ public class ConfigLocation {
     private String path = DEFAULT_SEARCH_DIRECTORY;
 
     private RemoteRepoLocation repoLocation;
+    
+    public String getPath(){
+        return path;
+    }
 }

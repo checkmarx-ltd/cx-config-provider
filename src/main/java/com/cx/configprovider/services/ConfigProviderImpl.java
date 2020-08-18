@@ -12,9 +12,17 @@ import java.util.Map;
 public class ConfigProviderImpl implements ConfigProvider {
 
     Map<String, Config> configurationMap = new HashMap<>();
+    private String appName;
 
     @Override
-    public void merge(String uid, ConfigResource configSource, ConfigObject configToMerge) throws ConfigurationException {
+    public void initBaseResource(String appName, ConfigResource configSource) throws ConfigurationException {
+
+        this.appName = appName;
+        loadResource(appName,configSource);
+    }
+    
+    @Override
+    public void mergeResources(String uid, ConfigResource configSource, ConfigObject configToMerge) throws ConfigurationException {
 
         Config config = configSource.parse();
         config.withFallback(configToMerge);
@@ -22,7 +30,7 @@ public class ConfigProviderImpl implements ConfigProvider {
     }
 
     @Override
-    public void load(String uid, ConfigResource configSource) throws ConfigurationException {
+    public void loadResource(String uid, ConfigResource configSource) throws ConfigurationException {
 
         Config config = configSource.parse();
         store(uid, config);
@@ -43,4 +51,8 @@ public class ConfigProviderImpl implements ConfigProvider {
         return configurationMap.get(uid).root().atKey(section).root();
     }
 
+    @Override
+    public ConfigObject getBaseConfig() {
+        return configurationMap.get(appName).root();
+    }
 }
