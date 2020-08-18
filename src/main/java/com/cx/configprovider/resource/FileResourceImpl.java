@@ -17,8 +17,8 @@ public class FileResourceImpl extends ConfigResourceImpl {
 ;
     private File file;
     
-
-    public void FileResourceImpl(ResourceType type, String filepath) throws ConfigurationException {
+    
+    public FileResourceImpl(ResourceType type, String filepath) throws ConfigurationException {
         file = new File(filepath);
         if(!file.exists()){
             throw new ConfigurationException("File not found: " + filepath);

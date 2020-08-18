@@ -1,4 +1,4 @@
-package com.cx.configprovider.services;
+package com.cx.configprovider.downloader;
 
 
 import io.cucumber.junit.Cucumber;
@@ -10,8 +10,8 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(
         plugin = { "pretty", "html:target/cucumber" },
-        glue = { "com.cx.configprovider.services" },
-        features = "classpath:cucumber/configprovider/configProvider.feature",
+        glue = { "com.cx.configprovider.downloader" },
+        features = "classpath:cucumber/configprovider/downloader.feature",
         tags = "not @Skip"
     )
 

@@ -1,12 +1,12 @@
-package com.cx.configprovider.services;
+package com.cx.configprovider;
 
 import com.cx.configprovider.dto.*;
 import com.cx.configprovider.resource.FileResourceImpl;
 import com.cx.configprovider.resource.RawResourceImpl;
 import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.cx.configprovider.exceptions.ConfigProviderException;
-import com.cx.configprovider.services.interfaces.ConfigLoader;
-import com.cx.configprovider.services.interfaces.SourceControlClient;
+import com.cx.configprovider.interfaces.ConfigLoader;
+import com.cx.configprovider.interfaces.SourceControlClient;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.naming.ConfigurationException;
@@ -93,7 +93,7 @@ public class RemoteRepoDownloader implements ConfigLoader {
         String fileContent = "";
         if (filenames.isEmpty()) {
             log.info("No config-as-code was found.");
-            return new FileResourceImpl();
+            return new RawResourceImpl(ResourceType.JSON, "", "");
         } else if (filenames.size() == SUPPORTED_FILE_COUNT) {
             fileContent = client.downloadFileContent(configLocation, filenames.get(0));
             log.info("Config-as-code was found with content length: {}", fileContent.length());
@@ -104,7 +104,7 @@ public class RemoteRepoDownloader implements ConfigLoader {
         }
 
 
-        return new FileResourceImpl();
+        return new RawResourceImpl(ResourceType.JSON, "", "");
     }
 
     private void throwInvalidCountException(List<String> filenames) {

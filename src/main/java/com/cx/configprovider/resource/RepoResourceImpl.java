@@ -3,8 +3,9 @@ package com.cx.configprovider.resource;
 import com.cx.configprovider.dto.ConfigLocation;
 import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.cx.configprovider.dto.RemoteRepoLocation;
-import com.cx.configprovider.services.RemoteRepoDownloader;
+import com.cx.configprovider.RemoteRepoDownloader;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigParseOptions;
 
 import javax.naming.ConfigurationException;
 import java.util.LinkedList;

@@ -1,4 +1,4 @@
-package com.cx.configprovider.services.interfaces;
+package com.cx.configprovider.interfaces;
 
 import com.cx.configprovider.dto.ConfigLocation;
 

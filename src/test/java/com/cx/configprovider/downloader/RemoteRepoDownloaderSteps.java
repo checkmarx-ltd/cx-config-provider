@@ -1,5 +1,6 @@
-package com.cx.configprovider.services;
+package com.cx.configprovider.downloader;
 
+import com.cx.configprovider.RemoteRepoDownloader;
 import com.cx.configprovider.dto.*;
 
 

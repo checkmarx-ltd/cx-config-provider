@@ -27,6 +27,8 @@ public abstract class ConfigResourceImpl implements ConfigResource{
     protected ResourceType type;
     protected Config config;
 
+    protected ConfigResourceImpl(){}
+    
     Config jsonToConfig(String fileContent) {
         return ConfigFactory.parseString(fileContent);
     }

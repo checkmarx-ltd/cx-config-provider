@@ -2,6 +2,7 @@ package com.cx.configprovider.resource;
 
 import com.cx.configprovider.dto.ResourceType;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigParseOptions;
 import lombok.Getter;
 
 import javax.naming.ConfigurationException;
@@ -17,8 +18,11 @@ public class RawResourceImpl extends ConfigResourceImpl {
     private ResourceType type;
     private String  name;
     private Config config;
+
+    private RawResourceImpl(){
+        super();
+    }
     
-   
     public RawResourceImpl(ResourceType type, String fileContent, String name) throws ConfigurationException {
         this.type = type;
         this.content = fileContent;

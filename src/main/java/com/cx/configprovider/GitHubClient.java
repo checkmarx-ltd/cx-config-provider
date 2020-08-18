@@ -1,8 +1,8 @@
-package com.cx.configprovider.services;
+package com.cx.configprovider;
 
 import com.cx.configprovider.dto.ConfigLocation;
 import com.cx.configprovider.dto.RemoteRepoLocation;
-import com.cx.configprovider.services.interfaces.SourceControlClient;
+import com.cx.configprovider.interfaces.SourceControlClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

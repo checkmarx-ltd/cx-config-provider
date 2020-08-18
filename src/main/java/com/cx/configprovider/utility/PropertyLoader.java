@@ -3,6 +3,7 @@ package com.cx.configprovider.utility;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
@@ -25,6 +26,17 @@ public class PropertyLoader {
         props = result;
     }
 
+    public String loadFileFromClassPath(String filename) throws FileNotFoundException {
+        Properties properties = new Properties();
+        ClassLoader classLoader = PropertyLoader.class.getClassLoader();
+        URL resource = classLoader.getResource(filename);
+        if (resource == null) {
+            log.warn("File is not found in resources: {}", filename);
+            throw new FileNotFoundException();
+        }
+        return resource.getFile();
+    }
+    
     private Properties getProps(String filename) {
         Properties properties = new Properties();
         ClassLoader classLoader = PropertyLoader.class.getClassLoader();

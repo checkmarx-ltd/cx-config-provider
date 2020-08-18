@@ -1,9 +1,10 @@
-package com.cx.configprovider.services;
+package com.cx.configprovider;
 
 import com.cx.configprovider.dto.interfaces.ConfigResource;
-import com.cx.configprovider.services.interfaces.ConfigProvider;
+import com.cx.configprovider.interfaces.ConfigProvider;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
+
 
 import javax.naming.ConfigurationException;
 import java.util.HashMap;
@@ -18,7 +19,8 @@ public class ConfigProviderImpl implements ConfigProvider {
     public void initBaseResource(String appName, ConfigResource configSource) throws ConfigurationException {
 
         this.appName = appName;
-        loadResource(appName,configSource);
+        Config config = configSource.parse();
+        store(appName, config);
     }
     
     @Override
@@ -26,13 +28,17 @@ public class ConfigProviderImpl implements ConfigProvider {
 
         Config config = configSource.parse();
         config.withFallback(configToMerge);
-        store(uid, config);
+        ConfigObject baseConfig = getBaseConfig();
+        baseConfig.withFallback(config);
+        store(uid, baseConfig.toConfig());
     }
 
     @Override
     public void loadResource(String uid, ConfigResource configSource) throws ConfigurationException {
 
+        ConfigObject baseConfig = getBaseConfig();
         Config config = configSource.parse();
+        config.withFallback(baseConfig);
         store(uid, config);
     }
 
