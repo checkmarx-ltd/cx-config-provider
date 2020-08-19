@@ -7,6 +7,11 @@ import javax.naming.ConfigurationException;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * This class should be used with applying several Configuration Resources at the same time.
+ * The elements will be applied based on the order ot their addition to the class,
+ * unless there is a rule for the order of applying of specific element types
+ */
 public class MutilpleResourcesImpl implements ConfigResource {
 
     List<ConfigResource> configSourceList = new LinkedList<>();
@@ -24,8 +29,15 @@ public class MutilpleResourcesImpl implements ConfigResource {
         //application.yml
         //config-as-code
     }
-    
-    
+
+    /**
+     * Converts a list on configSources added to the class to a config
+     * tree while applying a specified order. An element which has the 
+     * same name and xpath will be truncated by the same element as per 
+     * the applied hierarchy
+     * @return Config tree
+     * @throws ConfigurationException
+     */
     @Override
     public Config parse() throws ConfigurationException {
 
