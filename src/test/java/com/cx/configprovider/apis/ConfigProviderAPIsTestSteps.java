@@ -13,6 +13,8 @@ import com.cx.configprovider.resource.EnvPropResourceImpl;
 import com.cx.configprovider.resource.FileResourceImpl;
 import com.cx.configprovider.utility.PropertyLoader;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigRenderOptions;
+import com.typesafe.config.ConfigValue;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -39,6 +41,8 @@ public class ConfigProviderAPIsTestSteps {
     private static final String APPLICATION_TEST_API_YML = "application-test-api.yml";
     private static final String APP_NAME = "ConfigProviderAPIsTest";
     private static final String FLOW_1 = "flow1";
+    private static final String ENV_PROP_GIT_HUB_TOKEN = "envPropGitHubToken";
+    private static final String GITHUB_TOKEN_FROM_APP = "githubTokenFromApp";
     static PropertyLoader props = new PropertyLoader();
     private static SourceProviderType providerType;
     private ConfigResource config;
@@ -52,27 +56,44 @@ public class ConfigProviderAPIsTestSteps {
     }
     
     @Given("env variable truncates application.yml property")
-    public void loadAppYml(){
+    public void loadAppYmlFirst(){
         try {
             String filePath = props.loadFileFromClassPath(APPLICATION_TEST_API_YML);
             FileResourceImpl fileResource = new FileResourceImpl(ResourceType.YML,filePath);
             configProvider.initBaseResource(APP_NAME, fileResource);
             EnvPropResourceImpl envPropResourceImpl = new EnvPropResourceImpl();
-            envPropResourceImpl.addPropertyValue("token", "github", "envPropGitHubToken");
+            envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
             configProvider.loadResource(FLOW_1, envPropResourceImpl);
         } catch (FileNotFoundException | ConfigurationException e) {
             Assert.fail(e.getMessage());
         }
     }
 
-     
-    @Then("GITHUB token from application-test-api.yml is truncated by those loaded from the env variables")
-    public void loadConfigProvider(){
-        String result = configProvider.getConfigObject(FLOW_1).atKey("token").root().render();
-        Config token = configProvider.getConfigObject(FLOW_1).atPath("github/token");
-        
+    @Given("application.yml properties truncate env variables")
+    public void loadAppEnvVarsFirst(){
+        try {
+            String filePath = props.loadFileFromClassPath(APPLICATION_TEST_API_YML);
+            EnvPropResourceImpl envPropResourceImpl = new EnvPropResourceImpl();
+            envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
+            configProvider.initBaseResource(APP_NAME, envPropResourceImpl);
+            FileResourceImpl fileResource = new FileResourceImpl(ResourceType.YML,filePath);
+            configProvider.loadResource(FLOW_1, fileResource);
+        } catch (FileNotFoundException | ConfigurationException e) {
+            Assert.fail(e.getMessage());
+        }
     }
     
+    @Then("GITHUB token from application-test-api.yml is truncated by those loaded from the env variables")
+    public void loadConfigProvider(){
+        String value = configProvider.getConfigObject(FLOW_1).toConfig().getString(GITHUB_TOKEN);
+        assertEquals(ENV_PROP_GIT_HUB_TOKEN, value);
+    }
+
+    @Then("GITHUB token from env variables is truncated by the one from application.yml")
+    public void loadConfigProvider2(){
+        String value = configProvider.getConfigObject(FLOW_1).toConfig().getString(GITHUB_TOKEN);
+        assertEquals(GITHUB_TOKEN_FROM_APP, value);
+    }
 //
 //    @When("repository source is GITHUB")
 //    public void setRepositorySource(){

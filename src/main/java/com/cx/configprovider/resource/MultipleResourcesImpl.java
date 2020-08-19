@@ -12,11 +12,11 @@ import java.util.List;
  * The elements will be applied based on the order ot their addition to the class,
  * unless there is a rule for the order of applying of specific element types
  */
-public class MutilpleResourcesImpl implements ConfigResource {
+public class MultipleResourcesImpl implements ConfigResource {
 
     List<ConfigResource> configSourceList = new LinkedList<>();
 
-    public MutilpleResourcesImpl add(ConfigResource ConfigSource){
+    public MultipleResourcesImpl add(ConfigResource ConfigSource){
         configSourceList.add(ConfigSource);
         applyOrder();
         return this;
