@@ -11,8 +11,8 @@ public class EnvPropResourceImpl extends PropResourceImpl  {
     /**
      * loads environment variable named propertyName and places it in a specified
      * path in a configuration tree
-     * @param propertyName
-     * @param xpath
+     * @param propertyName environment variable named propertyName 
+     * @param path in the configuration tree to place this property
      */
     public void addEnvVariable(String propertyName, String path){
         String propertyValue = System.getenv(propertyName);
@@ -22,8 +22,8 @@ public class EnvPropResourceImpl extends PropResourceImpl  {
     /**
      * loads system property named propertyName and places it in a specified
      * path in a configuration tree
-     * @param propertyName
-     * @param path
+     * @param propertyName system property named propertyName 
+     * @param path in the configuration tree to place this property
      */
     public void addSystemProperty(String propertyName, String path){
         String propertyValue = System.getProperty(propertyName);

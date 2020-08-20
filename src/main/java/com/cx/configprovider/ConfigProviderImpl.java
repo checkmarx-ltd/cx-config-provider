@@ -46,8 +46,8 @@ public class ConfigProviderImpl implements ConfigProvider {
      * @param configResource containing a representation of one or several
      *        configuration files. In case of multiple files their will
      *        be applied according to a policy. See {@link MultipleResourcesImpl}             
-     * @throws ConfigurationException
-     * @return
+     * @throws ConfigurationException exception
+     * @return ConfigObject representing a configuration tree
      */
     @Override
     public ConfigObject loadResource(String uid, ConfigResource configResource) throws ConfigurationException {

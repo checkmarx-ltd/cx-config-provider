@@ -13,8 +13,12 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-@Getter
 
+/**
+ * loads repository with default configuration files such as "cx.config" at the root of the folder
+ * and .checkmarx folder where all the yml configuration files will be located
+ */
+@Getter
 public class RepoResourceImpl implements ConfigResource {
 
     private static final String DEFAULT_SEARCH_DIRECTORY = ".checkmarx";
@@ -41,10 +45,7 @@ public class RepoResourceImpl implements ConfigResource {
         this.foldersToSearch = foldersToSearch;
     }
 
-    /**
-     * loads repository with default configuration files to refer to
-     * @param repo
-     */
+
     public RepoResourceImpl(RemoteRepo repo ){
         this.remoteRepo = repo;
         this.foldersToSearch.add(DEFAULT_SEARCH_DIRECTORY);

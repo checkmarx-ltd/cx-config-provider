@@ -44,7 +44,7 @@ public class MultipleResourcesImpl implements ConfigResource {
      * same name and path will be truncated by the same element as per 
      * the applied hierarchy
      * @return Config tree
-     * @throws ConfigurationException
+     * @throws ConfigurationException exception
      */
     @Override
     public Config parse() throws ConfigurationException {

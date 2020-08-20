@@ -35,7 +35,7 @@ public class PropResourceImpl implements ConfigResource {
      * loads a set of properties. It is important that each key in the 
      * property file will contain a full path to the field in the final 
      * configuration object
-     * @param properties
+     * @param properties a full set of properties to be converted into a configuration tree
      */
     public void loadProperties(Properties properties){
         properties.putAll(properties);
