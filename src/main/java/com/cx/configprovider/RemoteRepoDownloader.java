@@ -1,9 +1,8 @@
 package com.cx.configprovider;
 
 import com.cx.configprovider.dto.*;
-import com.cx.configprovider.resource.FileResourceImpl;
-import com.cx.configprovider.resource.RawResourceImpl;
 import com.cx.configprovider.dto.interfaces.ConfigResource;
+import com.cx.configprovider.resource.RawResourceImpl;
 import com.cx.configprovider.exceptions.ConfigProviderException;
 import com.cx.configprovider.interfaces.ConfigLoader;
 import com.cx.configprovider.interfaces.SourceControlClient;
@@ -11,9 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.naming.ConfigurationException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 public class RemoteRepoDownloader implements ConfigLoader {
@@ -26,37 +23,44 @@ public class RemoteRepoDownloader implements ConfigLoader {
         sourceProviderMapping.put(SourceProviderType.GITHUB, GitHubClient.class);
     }
 
-    private ConfigLocation configLocation;
+    private RemoteRepo remoteRepo;
 
-    /**
-     * Downloads config-as-code contents from a remote source control repo. Gets files from a remote directory
-     * (specified by {@link ConfigLocation#getPath()} non-recursively. Each file in the directory is treated
-     * as config-as-code. If the path is null or empty, the repo root directory is assumed.
-     * <p>
-     * Currently no more than 1 config-as-code file is supported in a given directory.
-     *
-     * @param configLocation specifies a directory to get files from and repo access properties.
-     * @return a non-null instance of {@link ConfigResource} with config-as-code content.
-     * If config-as-code was not found, the instance contains an empty string.
-     * @throws ConfigProviderException if more than 1 config-as-code file is found in the specified directory
-     * @throws NullPointerException if configLocation or its repoLocation is null
-     */
+
     @Override
-    public ConfigResource getConfigAsCode(ConfigLocation configLocation) throws ConfigurationException {
+    public List<ConfigResource> getConfigAsCode(RemoteRepo repo, List<String> folders, String nameToFind) throws ConfigurationException {
         log.info("Searching for a config-as-code file in a remote repo");
-        validate(configLocation);
+        validate(repo);
 
-        this.configLocation = configLocation;
+        this.remoteRepo = repo;
 
         SourceControlClient client = determineSourceControlClient();
-        List<String> filenames = client.getDirectoryFilenames(configLocation);
-        return getFileContent(client, filenames);
+        
+            for (String folder : folders) {
+                List<String> filenames = client.getDirectoryFilenames(repo, folder);
 
+                String nameFound = filenames.stream()
+                        .filter(name -> nameToFind.equals(name))
+                        .findAny()
+                        .orElse(null);
+                
+                if(nameFound!=null){
+                    return getFileContent(client, repo, folder, Arrays.asList(nameFound));
+                }
+                else if (filenames.size() > 0) {
+                    return getFileContent(client, repo, folder, filenames);
+                }
+            }
+            
+        log.info("No config files were found for repo: " + 
+                repo.getRepoName() +
+                " in folders: " + folders );
+        
+        return new LinkedList<>();
         
     }
 
     private SourceControlClient determineSourceControlClient() {
-        SourceProviderType providerType = configLocation.getRepoLocation().getSourceProviderType();
+        SourceProviderType providerType = remoteRepo.getSourceProviderType();
         log.debug("Determining the client for the {} source control provider", providerType);
 
         Class<? extends SourceControlClient> clientClass = getClientClass(providerType);
@@ -89,35 +93,31 @@ public class RemoteRepoDownloader implements ConfigLoader {
         return clientClass;
     }
 
-    private ConfigResource getFileContent(SourceControlClient client, List<String> filenames) throws ConfigurationException {
-        String fileContent = "";
+    private List<ConfigResource> getFileContent(SourceControlClient client, RemoteRepo repo, String folder, List<String> filenames) throws ConfigurationException {
+        List<ConfigResource> resources = new LinkedList<>();
         if (filenames.isEmpty()) {
-            log.info("No config-as-code was found.");
-            return new RawResourceImpl(ResourceType.JSON, "", "");
-        } else if (filenames.size() == SUPPORTED_FILE_COUNT) {
-            fileContent = client.downloadFileContent(configLocation, filenames.get(0));
-            log.info("Config-as-code was found with content length: {}", fileContent.length());
-            RawResourceImpl configResourceImpl = new RawResourceImpl(ResourceType.JSON, fileContent, filenames.get(0));
-            return configResourceImpl;
-         } else {
-            throwInvalidCountException(filenames);
-        }
-
-
-        return new RawResourceImpl(ResourceType.JSON, "", "");
+            throw new IllegalArgumentException("file names can not be empty");
+        } else  {
+            for(String filename : filenames) {
+                String fileContent = client.downloadFileContent(folder, filenames.get(0), repo);
+                log.info("Config-as-code was found with content length: {}", fileContent.length());
+                RawResourceImpl configResourceImpl = new RawResourceImpl(ResourceType.JSON, fileContent, filenames.get(0));
+                resources.add(configResourceImpl);
+            }
+            return resources;
+         }
     }
 
-    private void throwInvalidCountException(List<String> filenames) {
-        String message = String.format(
-                "Found %d files in the '%s' directory. Only %d config-as-code file is currently supported.",
-                filenames.size(),
-                configLocation.getPath(),
-                SUPPORTED_FILE_COUNT);
-        throw new ConfigProviderException(message);
-    }
+//    private void throwInvalidCountException(List<String> filenames, String folder) {
+//        String message = String.format(
+//                "Found %d files in the '%s' directory. Only %d config-as-code file is currently supported.",
+//                filenames.size(),
+//                folder,
+//                SUPPORTED_FILE_COUNT);
+//        throw new ConfigProviderException(message);
+//    }
 
-    private static void validate(ConfigLocation configLocation) {
-        Objects.requireNonNull(configLocation, "ConfigLocation must not be null.");
-        Objects.requireNonNull(configLocation.getRepoLocation(), "RepositoryLocation must not be null.");
+    private static void validate(RemoteRepo configLocation) {
+         Objects.requireNonNull(configLocation, "Repository must not be null.");
     }
 }

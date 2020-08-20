@@ -11,7 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RemoteRepoLocation {
+public class RemoteRepo {
     private String apiBaseUrl;
     private String namespace;
     private String repoName;

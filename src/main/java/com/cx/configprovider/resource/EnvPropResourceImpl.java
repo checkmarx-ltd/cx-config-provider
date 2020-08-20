@@ -10,24 +10,24 @@ public class EnvPropResourceImpl extends PropResourceImpl  {
 
     /**
      * loads environment variable named propertyName and places it in a specified
-     * xpath in a configuration tree
+     * path in a configuration tree
      * @param propertyName
      * @param xpath
      */
-    public void addEnvVariable(String propertyName, String xpath){
+    public void addEnvVariable(String propertyName, String path){
         String propertyValue = System.getenv(propertyName);
-        addPropertyValue(propertyName, xpath, propertyValue);
+        addPropertyValue(propertyName, path, propertyValue);
     }
 
     /**
      * loads system property named propertyName and places it in a specified
-     * xpath in a configuration tree
+     * path in a configuration tree
      * @param propertyName
-     * @param xpath
+     * @param path
      */
-    public void addSystemProperty(String propertyName, String xpath){
+    public void addSystemProperty(String propertyName, String path){
         String propertyValue = System.getProperty(propertyName);
-        addPropertyValue(propertyName, xpath, propertyValue);
+        addPropertyValue(propertyName, path, propertyValue);
     }
     
 }

@@ -16,10 +16,18 @@ public class MultipleResourcesImpl implements ConfigResource {
 
     List<ConfigResource> configSourceList = new LinkedList<>();
 
-    public MultipleResourcesImpl add(ConfigResource ConfigSource){
+    public MultipleResourcesImpl(List<ConfigResource> configResources){
+        add(configResources);
+    }
+    
+    public void add(List<ConfigResource> configResources){
+        configSourceList.addAll(configResources);
+        applyOrder();
+    }
+    
+    public void add(ConfigResource ConfigSource){
         configSourceList.add(ConfigSource);
         applyOrder();
-        return this;
     }
 
     private void applyOrder() {
@@ -33,7 +41,7 @@ public class MultipleResourcesImpl implements ConfigResource {
     /**
      * Converts a list on configSources added to the class to a config
      * tree while applying a specified order. An element which has the 
-     * same name and xpath will be truncated by the same element as per 
+     * same name and path will be truncated by the same element as per 
      * the applied hierarchy
      * @return Config tree
      * @throws ConfigurationException

@@ -1,13 +1,13 @@
 Feature: Configuration provider external apis tests
 
-  @Skip
-  Scenario: config provider: application.yml and github config-as-code
-    Given application is started with AST parameters in application-test-api.yml
-    And github repository contains config-as-code with AST preset
-    When config provider is initialized by loading application-test-api.yml
-    And github_token env property is initialized
-    Then github repository loads its config-as-code
-    And AST preset from application.yml is truncated by the preset from config-as-code
+  
+  Scenario: github config-as-code truncates application.yml 
+           - application is started with GITHUB token and AST parameters in application-test-api.yml
+           - github repository contains config-as-code with AST preset
+           - and config provider is initialized by loading application-test-api.yml
+           - and config provider is initialized with github repository
+    Given github config-as-code truncates application.yml
+    Then AST preset from application.yml is truncated by the preset from config-as-code
 
 
   Scenario: env variable truncates application.yml property

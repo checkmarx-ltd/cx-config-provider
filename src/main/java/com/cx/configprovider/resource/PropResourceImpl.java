@@ -24,16 +24,16 @@ public class PropResourceImpl implements ConfigResource {
     /**
      * loads a specific property
      * @param propertyName property name 
-     * @param xpath full path to the property without property name separated by . char
+     * @param path full path to the property without property name separated by . char
      * @param value value of the property
      */
-    public void addPropertyValue(String propertyName, String xpath, String value){
-        properties.put(xpath + "." + propertyName, value);
+    public void addPropertyValue(String propertyName, String path, String value){
+        properties.put(path + "." + propertyName, value);
     }
 
     /**
      * loads a set of properties. It is important that each key in the 
-     * property file will contain a full xpath to the field in the final 
+     * property file will contain a full path to the field in the final 
      * configuration object
      * @param properties
      */

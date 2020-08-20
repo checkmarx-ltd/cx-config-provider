@@ -1,8 +1,9 @@
 github:
   token: githubTokenFromApp
+  configAsCode: cx.configuration
   
 ast:
   apiUrl: appURL
   token: appToken
-  preset: Default
+  preset: presetFromAppYml
   incremental: false

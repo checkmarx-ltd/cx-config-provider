@@ -1,6 +1,7 @@
 Feature: Configuration provider git path tests
     
-Scenario Outline: repository source is GITHUB
+    @Skip
+    Scenario Outline: repository source is GITHUB
     When repository source is GITHUB
     Then configuration provider will retrieve the configuration "<path>" from repository
     And the the returned configuration object will be "<expected>"

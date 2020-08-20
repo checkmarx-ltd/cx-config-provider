@@ -6,8 +6,10 @@ import com.cx.configprovider.dto.*;
 
 import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.cx.configprovider.exceptions.ConfigProviderException;
+import com.cx.configprovider.resource.RepoResourceImpl;
 import com.cx.configprovider.utility.PropertyLoader;
 
+import com.typesafe.config.Config;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -15,6 +17,8 @@ import io.cucumber.java.en.When;
 import org.junit.Assert;
 
 import javax.naming.ConfigurationException;
+
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -30,7 +34,8 @@ public class RemoteRepoDownloaderSteps {
     private static final String GITHUB_API_URL = "https://api.github.com";
     static PropertyLoader props = new PropertyLoader();
     private static SourceProviderType providerType;
-    private ConfigResource config;
+    private static Config config;
+
     private Exception exception;
     
 
@@ -58,9 +63,9 @@ public class RemoteRepoDownloaderSteps {
             fail("config not populated");
         }
         else if(expected.equals("empty")){
-            assertEmptyContent(config);
+            assertEmptyContent();
         }else{
-            assertNonEmptyContent(config);
+            assertNonEmptyContent();
         }
     }
     
@@ -71,43 +76,33 @@ public class RemoteRepoDownloaderSteps {
         }
     }
 
-    private static void assertEmptyContent(ConfigResource config) {
-        try {
-            Assert.assertTrue("Expected Config-as-code file content to be empty.", config.parse().isEmpty());
-        } catch (ConfigurationException e) {
-            Assert.fail(e.getMessage());
-        }
+    private static void assertEmptyContent() {
+        
+        Assert.assertTrue("Expected Config-as-code file content to be empty.", config.root().render().isEmpty());
+        
     }
 
-    private static void assertNonEmptyContent(ConfigResource config) {
-        try {
-            assertTrue("Config-as-code file content is empty.", !config.parse().isEmpty());
-        } catch (ConfigurationException e) {
-            Assert.fail(e.getMessage());
-        }
+    private static void assertNonEmptyContent() {
+  
+        assertTrue("Config-as-code file content is empty.", !config.root().render().isEmpty());
+        
     }
 
-    private static ConfigResource getConfigFromPath(String path) throws ConfigurationException {
+    private Config getConfigFromPath(String path) throws ConfigurationException {
 
-        RemoteRepoLocation repoLocation = getRemoteRepoLocation();
+        RepoResourceImpl repoResource = new RepoResourceImpl(getRemoteRepo());
+        repoResource.setFoldersToSearch(Arrays.asList(path));
 
-        ConfigLocation location = ConfigLocation.builder()
-                .path(path)
-                .repoLocation(repoLocation)
-                .build();
-
-        RemoteRepoDownloader downloader = new RemoteRepoDownloader();
-
-        ConfigResource result = downloader.getConfigAsCode(location);
-        assertNotNull("Config-as-code object must always be non-null.", result);
-        assertNotNull("File content must always be non-null.", result.parse().toString());
-        return result;
+        config = repoResource.parse();
+        assertNotNull("Config-as-code object must always be non-null.", config);
+        assertTrue("File content must always be non-null.", !config.isEmpty());
+        return config;
     }
 
-    private static RemoteRepoLocation getRemoteRepoLocation() {
-        RemoteRepoLocation repoLocation;
+    private static RemoteRepo getRemoteRepo() {
+        RemoteRepo repoLocation;
         if(SourceProviderType.GITHUB.equals(providerType)) {
-             repoLocation = RemoteRepoLocation.builder()
+             repoLocation = RemoteRepo.builder()
                     .apiBaseUrl(GITHUB_API_URL)
                     .repoName(GITHUB_REPO)
                     .namespace(GITHUB_NAMESPACE)

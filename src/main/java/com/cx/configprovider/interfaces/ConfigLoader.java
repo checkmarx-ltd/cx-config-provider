@@ -1,10 +1,12 @@
 package com.cx.configprovider.interfaces;
 
-import com.cx.configprovider.dto.ConfigLocation;
+import com.cx.configprovider.dto.RemoteRepo;
 import com.cx.configprovider.dto.interfaces.ConfigResource;
 
 import javax.naming.ConfigurationException;
+import java.util.List;
 
 public interface ConfigLoader {
-    public ConfigResource getConfigAsCode(ConfigLocation configLocation) throws ConfigurationException;
+    
+    List<ConfigResource> getConfigAsCode(RemoteRepo repo, List<String> folders, String nameToFind) throws ConfigurationException;
 }

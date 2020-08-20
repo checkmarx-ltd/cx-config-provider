@@ -1,8 +1,8 @@
 package com.cx.configprovider;
 
-import com.cx.configprovider.dto.ConfigLocation;
-import com.cx.configprovider.dto.RemoteRepoLocation;
+import com.cx.configprovider.dto.RemoteRepo;
 import com.cx.configprovider.interfaces.SourceControlClient;
+import com.cx.configprovider.resource.RepoResourceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,16 +44,16 @@ class GitHubClient implements SourceControlClient {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public String downloadFileContent(ConfigLocation configLocation, String filename) {
+    public String downloadFileContent(String path, String filename, RemoteRepo repo) {
         String result = null;
-        log.info("Downloading file content for '{}'", filename);
+        log.info("Downloading file content for '{}'", repo.getRepoName());
         try {
-            String combinedPath = Paths.get(configLocation.getPath(), filename).toString();
+            String combinedPath = Paths.get(path, filename).toString();
             combinedPath = FilenameUtils.normalize(combinedPath, true);
 
-            URI uri = createContentsUri(configLocation, combinedPath);
+            URI uri = createContentsUri(repo, combinedPath);
 
-            HttpResponse response = getContentResponse(uri, API_V3_RAW_CONTENTS_HEADER, configLocation);
+            HttpResponse response = getContentResponse(uri, API_V3_RAW_CONTENTS_HEADER, repo);
             result = getTextFrom(response);
         } catch (Exception e) {
             log.warn("Error downloading file contents", e);
@@ -62,18 +62,20 @@ class GitHubClient implements SourceControlClient {
     }
 
     @Override
-    public List<String> getDirectoryFilenames(ConfigLocation configLocation) {
+    public List<String> getDirectoryFilenames(RemoteRepo repoResource, String path) {
         List<String> result = Collections.emptyList();
-        String effectivePath = normalize(configLocation.getPath());
-        try {
-            URI uri = createContentsUri(configLocation, effectivePath);
-            HttpResponse response = getContentResponse(uri, API_V3_OBJECT_HEADER, configLocation);
-            result = getFilenamesFrom(response);
-        } catch (Exception e) {
-            log.warn("Error downloading directory contents", e);
-        }
+        
+            String effectivePath = normalize(path);
+            try {
+                URI uri = createContentsUri(repoResource, effectivePath);
+                HttpResponse response = getContentResponse(uri, API_V3_OBJECT_HEADER, repoResource);
+                result = getFilenamesFrom(response);
+            } catch (Exception e) {
+                log.warn("Error downloading directory contents", e);
+            }
 
-        log.info("Files found: {}", result);
+            log.info("Files found: {}", result);
+        
         return result;
     }
 
@@ -87,19 +89,19 @@ class GitHubClient implements SourceControlClient {
         return result;
     }
 
-    private static HttpResponse getContentResponse(URI uri, String acceptHeaderValue, ConfigLocation configLocation)
+    private static HttpResponse getContentResponse(URI uri, String acceptHeaderValue, RemoteRepo repo)
             throws IOException {
         log.debug("Getting the contents from {}", uri);
 
-        Request request = getRequestWithAuth(configLocation, Request.Get(uri));
+        Request request = getRequestWithAuth(repo, Request.Get(uri));
 
         return request.addHeader(ACCEPT_HEADER, acceptHeaderValue)
                 .execute()
                 .returnResponse();
     }
 
-    private static Request getRequestWithAuth(ConfigLocation configLocation, Request request) {
-        String accessToken = configLocation.getRepoLocation().getAccessToken();
+    private static Request getRequestWithAuth(RemoteRepo repo, Request request) {
+        String accessToken = repo.getAccessToken();
         if (StringUtils.isNotEmpty(accessToken)) {
             log.debug("Using an access token");
             String authHeaderValue = String.format("token %s", accessToken);
@@ -146,9 +148,8 @@ class GitHubClient implements SourceControlClient {
         return result;
     }
 
-    private static URI createContentsUri(ConfigLocation configLocation, String directoryPath) throws
+    private static URI createContentsUri(RemoteRepo repo, String directoryPath) throws
             URISyntaxException {
-        RemoteRepoLocation repo = configLocation.getRepoLocation();
 
         String path = String.format(GET_CONTENTS_TEMPLATE,
                 repo.getNamespace(), repo.getRepoName(), directoryPath);

@@ -9,7 +9,7 @@ public interface ConfigResource {
     /**
      * Converts ConfigResource to a configuration tree
      * as places each element in the tree based on its 
-     * xpath
+     * path
      * @return Config tree
      * @throws ConfigurationException
      */
