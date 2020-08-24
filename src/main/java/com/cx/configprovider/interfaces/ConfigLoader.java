@@ -7,6 +7,7 @@ import javax.naming.ConfigurationException;
 import java.util.List;
 
 public interface ConfigLoader {
-    
-    List<ConfigResource> getConfigAsCode(RemoteRepo repo, List<String> folders, String nameToFind) throws ConfigurationException;
+
+    List<ConfigResource> downloadRepoFiles(RemoteRepo repo, List<String> folders, String nameToFind, String suffixToFind) throws ConfigurationException;
+
 }

@@ -45,4 +45,11 @@ public class PropResourceImpl implements ConfigResource {
     public Config parse() throws ConfigurationException {
         return ConfigFactory.parseProperties(properties);
     }
+
+    @Override
+    public String getName() {
+        return resourceType.name();
+    }
+    
+    
 }

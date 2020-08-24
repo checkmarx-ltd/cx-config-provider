@@ -12,6 +12,7 @@ import javax.naming.ConfigurationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ConfigProviderImpl implements ConfigProvider {
 
@@ -65,7 +66,8 @@ public class ConfigProviderImpl implements ConfigProvider {
 
     @Override
     public ConfigObject getConfigObject(String uid){
-        return configurationMap.get(uid).root();
+        return Optional.ofNullable(configurationMap.get(uid)).map(config -> config.root())
+        .orElse(null);
     }
 
     @Override
@@ -100,7 +102,7 @@ public class ConfigProviderImpl implements ConfigProvider {
     
     @Override
     public ConfigObject getConfigObjectSection(String uid, String section){
-        return configurationMap.get(uid).root().atKey(section).root();
+        return getConfigObject(uid).atKey(section).root();
     }
 
     @Override

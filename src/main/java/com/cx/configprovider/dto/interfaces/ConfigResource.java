@@ -14,4 +14,6 @@ public interface ConfigResource {
      * @throws ConfigurationException exception
      */
     Config parse() throws ConfigurationException;
+    
+    String getName();
 }

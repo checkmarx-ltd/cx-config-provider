@@ -6,6 +6,7 @@ import com.typesafe.config.ConfigParseOptions;
 import lombok.Getter;
 
 import javax.naming.ConfigurationException;
+import java.util.Optional;
 
 /**
  * Represents a non-parsed ("raw") config-as-code.
@@ -28,6 +29,17 @@ public class RawResourceImpl extends ConfigResourceImpl {
         this.content = fileContent;
         this.name = name;
     }
+
+    public RawResourceImpl(String fileContent, String name) throws ConfigurationException {
+        if(name.toUpperCase().endsWith(ResourceType.YML.toString().toUpperCase())){
+            this.type = ResourceType.YML;
+        }else{
+            this.type = ResourceType.JSON;
+        }
+        
+        this.content = fileContent;
+        this.name = name;
+    }
     
     @Override
     public Config parse() throws ConfigurationException {
@@ -40,5 +52,10 @@ public class RawResourceImpl extends ConfigResourceImpl {
         return config;
     }
 
-  
+    @Override
+    public String getName() {
+        return Optional.ofNullable(name).orElse(type.name()) ;
+    }
+
+
 }

@@ -7,10 +7,13 @@ import com.cx.configprovider.exceptions.ConfigProviderException;
 import com.cx.configprovider.interfaces.ConfigLoader;
 import com.cx.configprovider.interfaces.SourceControlClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.ConfigurationException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class RemoteRepoDownloader implements ConfigLoader {
@@ -26,36 +29,71 @@ public class RemoteRepoDownloader implements ConfigLoader {
     private RemoteRepo remoteRepo;
 
 
+    public ConfigResource loadFileByName(SourceControlClient client, RemoteRepo repo, String folder, String fileToFind, List<String> filenames ) throws ConfigurationException {
+
+        if(StringUtils.isEmpty(fileToFind)){
+            return null;
+        }
+        String nameFound = filenames.stream()
+                .filter(name -> fileToFind.equals(name))
+                .findAny()
+                .orElse(null);
+
+        if(nameFound!=null){
+            return downloadFiles(client, repo, folder, Arrays.asList(nameFound)).get(0);
+        }
+        return null;
+    }
+
+
+    public List loadFileBySuffix(SourceControlClient client, RemoteRepo repo, String folder, String suffix, List<String> folderFiles ) throws ConfigurationException {
+
+        if(StringUtils.isEmpty(suffix)){
+            return null;
+        }
+        List matchingFiles = folderFiles.stream()
+                .filter(name -> name.endsWith(suffix))
+                .collect(Collectors.toList());
+        
+        if(matchingFiles.size()>0){
+            return downloadFiles(client, repo, folder,matchingFiles);
+        }else {
+            return null;
+        }
+    }
+    
     @Override
-    public List<ConfigResource> getConfigAsCode(RemoteRepo repo, List<String> folders, String nameToFind) throws ConfigurationException {
+    public List<ConfigResource> downloadRepoFiles(RemoteRepo repo, List<String> folders, String nameToFind, String suffixToFind) throws ConfigurationException {
         log.info("Searching for a config-as-code file in a remote repo");
         validate(repo);
 
         this.remoteRepo = repo;
-
-        SourceControlClient client = determineSourceControlClient();
+        List<ConfigResource> resources = new LinkedList<>();
         
-            for (String folder : folders) {
-                List<String> filenames = client.getDirectoryFilenames(repo, folder);
+        SourceControlClient client = determineSourceControlClient();
 
-                String nameFound = filenames.stream()
-                        .filter(name -> nameToFind.equals(name))
-                        .findAny()
-                        .orElse(null);
-                
-                if(nameFound!=null){
-                    return getFileContent(client, repo, folder, Arrays.asList(nameFound));
-                }
-                else if (filenames.size() > 0) {
-                    return getFileContent(client, repo, folder, filenames);
-                }
+        for (String folder : folders) {
+            List<String> filenames = client.getDirectoryFilenames(repo, folder);
+
+            ConfigResource specificFile = loadFileByName(client, repo, folder, nameToFind, filenames);
+
+            if (specificFile != null) {
+                resources = Arrays.asList(specificFile);
+            } else {
+                resources = loadFileBySuffix(client, repo, folder, suffixToFind, filenames);
             }
-            
-        log.info("No config files were found for repo: " + 
+            if (resources == null) {
+                resources = downloadFiles(client, repo, folder, filenames);
+            }
+        }
+
+        List<String> resourceNames = resources.stream().map(resource -> resource.getName().concat(" ")).collect(Collectors.toList());
+
+        log.info("Config files " + resourceNames + "\nwere found for repo: " + 
                 repo.getRepoName() +
                 " in folders: " + folders );
         
-        return new LinkedList<>();
+        return resources;
         
     }
 
@@ -93,17 +131,23 @@ public class RemoteRepoDownloader implements ConfigLoader {
         return clientClass;
     }
 
-    private List<ConfigResource> getFileContent(SourceControlClient client, RemoteRepo repo, String folder, List<String> filenames) throws ConfigurationException {
+    private List<ConfigResource> downloadFiles(SourceControlClient client, RemoteRepo repo, String folder, List<String> filenames) throws ConfigurationException {
         List<ConfigResource> resources = new LinkedList<>();
-        if (filenames.isEmpty()) {
+        if (filenames == null || filenames.isEmpty()) {
             throw new IllegalArgumentException("file names can not be empty");
         } else  {
-            for(String filename : filenames) {
-                String fileContent = client.downloadFileContent(folder, filenames.get(0), repo);
+            filenames.stream().sorted().forEachOrdered(filename ->{
+                String fileContent = client.downloadFileContent(folder, filename, repo);
                 log.info("Config-as-code was found with content length: {}", fileContent.length());
-                RawResourceImpl configResourceImpl = new RawResourceImpl(ResourceType.JSON, fileContent, filenames.get(0));
+                RawResourceImpl configResourceImpl = null;
+                try {
+                    configResourceImpl = new RawResourceImpl(fileContent, filename);
+                } catch (ConfigurationException e) {
+                   throw new RuntimeException(e);
+                }
                 resources.add(configResourceImpl);
-            }
+            });
+            
             return resources;
          }
     }

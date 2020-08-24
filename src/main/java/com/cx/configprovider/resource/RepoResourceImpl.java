@@ -3,9 +3,7 @@ package com.cx.configprovider.resource;
 import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.cx.configprovider.dto.RemoteRepo;
 import com.cx.configprovider.RemoteRepoDownloader;
-import com.cx.configprovider.exceptions.ConfigProviderException;
 import com.typesafe.config.Config;
-import lombok.Builder;
 import lombok.Getter;
 
 import javax.naming.ConfigurationException;
@@ -24,13 +22,15 @@ public class RepoResourceImpl implements ConfigResource {
     private static final String DEFAULT_SEARCH_DIRECTORY = ".checkmarx";
     private static final String REPO_ROOT = "";
     private static final String CX_CONFIG = "cx.config";
+    private static final String YML = "yml";
     private String configAsCode;
     
     RemoteRepo remoteRepo;
     RemoteRepoDownloader downloader = new RemoteRepoDownloader();
   
     List<String> foldersToSearch = new LinkedList<String>();
-    
+    private MultipleResourcesImpl downloadedResource;
+
     public RepoResourceImpl(RemoteRepo repo, String configAsCode, List<String> foldersToSearch){
         this.remoteRepo = repo;
         this.configAsCode = configAsCode;
@@ -51,23 +51,42 @@ public class RepoResourceImpl implements ConfigResource {
         this.foldersToSearch.add(DEFAULT_SEARCH_DIRECTORY);
         setConfigAsCode(CX_CONFIG);
     }
-    
 
+
+    /**
+     * Parses the configuration files in repository according to the following order:
+     * 1. config-as-code in the root of the repository.
+     *   (The name of the config-as-code file is set by {@link #setConfigAsCode(String)} )
+     * 2. yml files in .checkmarx folder in alphabetical order  
+     * yml files elements will truncate the elements with the same name and path in config-as-code 
+     * @return Config object representing ap arsed configuration consisting of all resources
+     * @throws ConfigurationException exception
+     */
     @Override
     public Config parse() throws ConfigurationException {
         
-        List<ConfigResource> listRawConfigAsCode = downloader.getConfigAsCode(getRemoteRepo(), Arrays.asList(REPO_ROOT), configAsCode);
+        //first load config-as-code from the root of the repo (default) or other folder set 
+        ConfigResource configAsCodeResource = downloader.downloadRepoFiles(getRemoteRepo(), Arrays.asList(REPO_ROOT), configAsCode, null).get(0);
 
-        //Search for config as code at the root of the repo
-        if (listRawConfigAsCode.size() == 1) {
-            return listRawConfigAsCode.get(0).parse();
-        }else {
-            //search for YML files
-            List<ConfigResource> listRaw = downloader.getConfigAsCode(getRemoteRepo(), getFoldersToSearch(), null);
-            return new MultipleResourcesImpl(listRaw).parse();
-        }
+        //then load config Ymls from .checkmarx folder (default) and other from folders set 
+        List<ConfigResource> listRawConfigYmls = downloader.downloadRepoFiles(getRemoteRepo(), foldersToSearch, null, YML);
+
+        //add config-as-code to be the first one in the list - so that hte ymls be applied over it
+        //ymls truncate configuration elements with the same name and path in config-as-code
+        listRawConfigYmls.add(0,configAsCodeResource);
+
+        MultipleResourcesImpl multipleResourcesImpl = new MultipleResourcesImpl(listRawConfigYmls);
+
+        this.downloadedResource = multipleResourcesImpl;
+        //parse will apply configuration file based on their order in the list
+        //meaning ymls truncate configuration elements with the same name and path in config-as-code
+        return multipleResourcesImpl.parse();
 
     }
     
+    @Override
+    public String getName() {
+        return downloadedResource.getName();
+    }
 
 }

@@ -6,6 +6,8 @@ import com.typesafe.config.Config;
 import javax.naming.ConfigurationException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * This class should be used with applying several Configuration Resources at the same time.
@@ -16,6 +18,9 @@ public class MultipleResourcesImpl implements ConfigResource {
 
     List<ConfigResource> configSourceList = new LinkedList<>();
 
+    public MultipleResourcesImpl(){
+    }
+    
     public MultipleResourcesImpl(List<ConfigResource> configResources){
         add(configResources);
     }
@@ -55,11 +60,17 @@ public class MultipleResourcesImpl implements ConfigResource {
                 configFull = configSource.parse();
             }else{
                 Config configCurrent = configSource.parse();
-                configFull.withFallback(configCurrent);
+                configFull = configCurrent.withFallback(configFull);
             }
 
         }
 
         return configFull;
     }
+
+    @Override
+    public String getName() {
+        return configSourceList.stream().map(resource -> resource.getName().concat(" ")).collect(Collectors.toList()).toString();
+    }
+
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 
 import javax.naming.ConfigurationException;
 import java.io.File;
+import java.util.Optional;
 
 /**
  * Represents a non-parsed ("raw") config-as-code.
@@ -37,5 +38,10 @@ public class FileResourceImpl extends ConfigResourceImpl {
         return config;
     }
 
-   
+    @Override
+    public String getName() {
+        return Optional.ofNullable(file.getPath()).orElse(type.name()) ;
+    }
+
+
 }

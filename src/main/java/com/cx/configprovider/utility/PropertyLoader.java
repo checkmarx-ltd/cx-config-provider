@@ -26,7 +26,7 @@ public class PropertyLoader {
         props = result;
     }
 
-    public String loadFileFromClassPath(String filename) throws FileNotFoundException {
+    public String getFileUrlInClassloader(String filename) throws FileNotFoundException {
         Properties properties = new Properties();
         ClassLoader classLoader = PropertyLoader.class.getClassLoader();
         URL resource = classLoader.getResource(filename);

@@ -34,5 +34,10 @@ public class URLResourceImpl extends ConfigResourceImpl {
         return config;
     }
 
-    
+    @Override
+    public String getName() {
+        return url.getPath();
+    }
+
+
 }
