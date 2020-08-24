@@ -30,7 +30,7 @@ public class RemoteRepoDownloader implements ConfigLoader {
 
 
     public ConfigResource loadFileByName(SourceControlClient client, RemoteRepo repo, String folder, String fileToFind, List<String> filenames ) throws ConfigurationException {
-
+        
         if(StringUtils.isEmpty(fileToFind)){
             return null;
         }
@@ -46,10 +46,12 @@ public class RemoteRepoDownloader implements ConfigLoader {
     }
 
 
-    public List loadFileBySuffix(SourceControlClient client, RemoteRepo repo, String folder, String suffix, List<String> folderFiles ) throws ConfigurationException {
+    public List<ConfigResource> loadFileBySuffix(SourceControlClient client, RemoteRepo repo, String folder, String suffix, List<String> folderFiles ) throws ConfigurationException {
 
+        List<ConfigResource> emptyList = new LinkedList<>();
+        
         if(StringUtils.isEmpty(suffix)){
-            return null;
+            return emptyList;
         }
         List matchingFiles = folderFiles.stream()
                 .filter(name -> name.endsWith(suffix))
@@ -58,7 +60,7 @@ public class RemoteRepoDownloader implements ConfigLoader {
         if(matchingFiles.size()>0){
             return downloadFiles(client, repo, folder,matchingFiles);
         }else {
-            return null;
+            return emptyList;
         }
     }
     
@@ -82,7 +84,7 @@ public class RemoteRepoDownloader implements ConfigLoader {
             } else {
                 resources = loadFileBySuffix(client, repo, folder, suffixToFind, filenames);
             }
-            if (resources == null) {
+            if (resources.size() == 0) {
                 resources = downloadFiles(client, repo, folder, filenames);
             }
         }

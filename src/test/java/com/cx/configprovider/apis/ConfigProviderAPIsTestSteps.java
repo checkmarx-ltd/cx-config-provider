@@ -201,10 +201,10 @@ public class ConfigProviderAPIsTestSteps {
     @Then("unique elements form all configuration file will exist in in the final configuration")
      public void validateUniqueFromGithubYml(){
         String valueUniqueFromA= configProvider.getConfigObject(FLOW_1).toConfig().getString("jira.issue-type");
-        assertEquals(valueUniqueFromA, "valueUniqueFromA");
+        assertEquals( "valueUniqueFromA", valueUniqueFromA);
 
         String valueUniqueFromB = configProvider.getConfigObject(FLOW_1).toConfig().getString("jira.unique-field");
-        assertEquals(valueUniqueFromB, "valueFromB");
+        assertEquals("valueFromB", valueUniqueFromB);
     }
     
 
