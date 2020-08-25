@@ -1,6 +1,7 @@
 package com.cx.configprovider.resource;
 
 import com.cx.configprovider.dto.ResourceType;
+import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
 import lombok.Getter;
 
@@ -13,7 +14,7 @@ import java.net.URL;
 
 
 @Getter
-public class URLResourceImpl extends ConfigResourceImpl {
+public class URLResource extends AbstractFileResource implements ConfigResource {
  
     private URL url;
 
@@ -25,7 +26,7 @@ public class URLResourceImpl extends ConfigResourceImpl {
     
     
     @Override
-    public Config parse() throws ConfigurationException {
+    Config loadConfig() throws ConfigurationException {
         if(ResourceType.YML.equals(type)){
             config = yamlToConfig(url);
         }else if(ResourceType.JSON.equals(type)){

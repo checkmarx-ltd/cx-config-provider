@@ -1,12 +1,11 @@
 package com.cx.configprovider.downloader;
 
-import com.cx.configprovider.RemoteRepoDownloader;
 import com.cx.configprovider.dto.*;
 
 
-import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.cx.configprovider.exceptions.ConfigProviderException;
-import com.cx.configprovider.resource.RepoResourceImpl;
+import com.cx.configprovider.resource.Parser;
+import com.cx.configprovider.resource.RepoResource;
 import com.cx.configprovider.utility.PropertyLoader;
 
 import com.typesafe.config.Config;
@@ -90,30 +89,21 @@ public class RemoteRepoDownloaderSteps {
 
     private Config getConfigFromPath(String path) throws ConfigurationException {
 
-        RepoResourceImpl repoResource = new RepoResourceImpl(getRemoteRepo());
+        RepoResource repoResource = getRemoteRepo();
         repoResource.setFoldersToSearch(Arrays.asList(path));
-
-        config = repoResource.parse();
+        
+        config = Parser.parse(repoResource);
         assertNotNull("Config-as-code object must always be non-null.", config);
         assertTrue("File content must always be non-null.", !config.isEmpty());
         return config;
     }
 
-    private static RemoteRepo getRemoteRepo() {
-        RemoteRepo repoLocation;
+    private RepoResource getRemoteRepo() {
         if(SourceProviderType.GITHUB.equals(providerType)) {
-             repoLocation = RemoteRepo.builder()
-                    .apiBaseUrl(GITHUB_API_URL)
-                    .repoName(GITHUB_REPO)
-                    .namespace(GITHUB_NAMESPACE)
-                    .ref(BRANCH)
-                    .accessToken(props.getProperty(GITHUB_TOKEN))
-                    .sourceProviderType(SourceProviderType.GITHUB)
-                    .build();
+            return new RepoResource(GITHUB_API_URL,GITHUB_NAMESPACE,GITHUB_REPO, BRANCH, props.getProperty(GITHUB_TOKEN), SourceProviderType.GITHUB);
         }else{
             throw new UnsupportedOperationException();
         }
-        return repoLocation;
     }
 
 }

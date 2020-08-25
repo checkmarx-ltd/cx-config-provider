@@ -1,7 +1,6 @@
 package com.cx.configprovider.apis;
 
 import com.cx.configprovider.ConfigProviderImpl;
-import com.cx.configprovider.dto.RemoteRepo;
 import com.cx.configprovider.dto.ResourceType;
 import com.cx.configprovider.dto.SourceProviderType;
 import com.cx.configprovider.resource.*;
@@ -75,7 +74,7 @@ public class ConfigProviderAPIsTestSteps {
     
 
     private ConfigObject loadPropertiesRealToken() throws ConfigurationException {
-        PropResourceImpl envPropResourceImpl = new PropResourceImpl();
+        PropertiesResource envPropResourceImpl = new PropertiesResource();
         
         envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, props.getProperty(GITHUB_TOKEN));
         ConfigObject resource = configProvider.loadResource(FLOW_1, envPropResourceImpl);
@@ -83,7 +82,7 @@ public class ConfigProviderAPIsTestSteps {
     }
     
     private ConfigObject loadEnVProperties() throws ConfigurationException {
-        EnvPropResourceImpl envPropResourceImpl = new EnvPropResourceImpl();
+        EnvProperties envPropResourceImpl = new EnvProperties();
         envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
         ConfigObject resource = configProvider.loadResource(FLOW_1, envPropResourceImpl);
         return resource;
@@ -93,10 +92,10 @@ public class ConfigProviderAPIsTestSteps {
     public void loadAppEnvVarsAndThenApplicationYml(){
         try {
             String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
-            EnvPropResourceImpl envPropResourceImpl = new EnvPropResourceImpl();
+            EnvProperties envPropResourceImpl = new EnvProperties();
             envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
             configProvider.initBaseResource(APP_NAME, envPropResourceImpl);
-            FileResourceImpl fileResource = new FileResourceImpl(ResourceType.YML,filePath);
+            FileResource fileResource = new FileResource(ResourceType.YML,filePath);
             configProvider.loadResource(FLOW_1, fileResource);
         } catch (FileNotFoundException | ConfigurationException e) {
             Assert.fail(e.getMessage());
@@ -121,15 +120,14 @@ public class ConfigProviderAPIsTestSteps {
     private void loadGithubResources(ConfigObject configWithEnvs, String branch) throws ConfigurationException {
         String confgiAsCodeFile = configProvider.getStringValue(FLOW_1, GITHUB_CONFIG_AS_CODE);
         String token = extractGithubTokenFromBaseResource(FLOW_1);
-        RemoteRepo repoLocation = getRemoteRepoLocation(branch, token);
-        RepoResourceImpl repoResource = new RepoResourceImpl(repoLocation);
-        repoResource.setConfigAsCode(confgiAsCodeFile);
-        configProvider.mergeResources(FLOW_1, repoResource, configWithEnvs);
+        RepoResource repoResource = getRemoteRepoLocation(branch, token);
+        repoResource.setConfigAsCodeFileName(confgiAsCodeFile);
+        configProvider.loadResources(FLOW_1, repoResource, configWithEnvs);
     }
 
     private void loadAppYml() throws FileNotFoundException, ConfigurationException {
         String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
-        FileResourceImpl fileResource = new FileResourceImpl(ResourceType.YML, filePath);
+        FileResource fileResource = new FileResource(ResourceType.YML, filePath);
         configProvider.initBaseResource(APP_NAME, fileResource);
     }
 
@@ -137,12 +135,12 @@ public class ConfigProviderAPIsTestSteps {
     public void testBaseResourceUsingMultipleResources() throws FileNotFoundException, ConfigurationException{
         String appYml = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
         String appSecretsYml = props.getFileUrlInClassloader(APPLICATION_SECRETS_TEST_API_YML);
-        FileResourceImpl appYmlResource = new FileResourceImpl(ResourceType.YML, appYml);
-        FileResourceImpl appSecretsYmlResource = new FileResourceImpl(ResourceType.YML, appSecretsYml);
-        EnvPropResourceImpl envPropResourceImpl = new EnvPropResourceImpl();
+        FileResource appYmlResource = new FileResource(ResourceType.YML, appYml);
+        FileResource appSecretsYmlResource = new FileResource(ResourceType.YML, appSecretsYml);
+        EnvProperties envPropResourceImpl = new EnvProperties();
         envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
 
-        MultipleResourcesImpl multipleResources = new MultipleResourcesImpl();
+        MultipleResources multipleResources = new MultipleResources();
         multipleResources.add(appYmlResource);
         multipleResources.add(appSecretsYmlResource);
         multipleResources.add(envPropResourceImpl);
@@ -209,15 +207,9 @@ public class ConfigProviderAPIsTestSteps {
     
 
 
-    private static RemoteRepo getRemoteRepoLocation(String branch, String token) {
-           return RemoteRepo.builder()
-                    .apiBaseUrl(GITHUB_API_URL)
-                    .repoName(GITHUB_REPO)
-                    .namespace(GITHUB_NAMESPACE)
-                    .ref(branch)
-                    .accessToken(token)
-                    .sourceProviderType(SourceProviderType.GITHUB)
-                    .build();
+    private RepoResource getRemoteRepoLocation(String branch, String token) {
+        
+           return new RepoResource(GITHUB_API_URL,GITHUB_NAMESPACE,GITHUB_REPO, branch, token, SourceProviderType.GITHUB);
     }
 
 }

@@ -1,8 +1,7 @@
 package com.cx.configprovider;
 
-import com.cx.configprovider.dto.RemoteRepo;
+import com.cx.configprovider.dto.RepoDto;
 import com.cx.configprovider.interfaces.SourceControlClient;
-import com.cx.configprovider.resource.RepoResourceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +43,7 @@ class GitHubClient implements SourceControlClient {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public String downloadFileContent(String path, String filename, RemoteRepo repo) {
+    public String downloadFileContent(String path, String filename, RepoDto repo) {
         String result = null;
         log.info("Downloading file content for '{}'", repo.getRepoName());
         try {
@@ -62,7 +61,7 @@ class GitHubClient implements SourceControlClient {
     }
 
     @Override
-    public List<String> getDirectoryFilenames(RemoteRepo repoResource, String path) {
+    public List<String> getDirectoryFilenames(RepoDto repoResource, String path) {
         List<String> result = Collections.emptyList();
         
             String effectivePath = normalize(path);
@@ -89,7 +88,7 @@ class GitHubClient implements SourceControlClient {
         return result;
     }
 
-    private static HttpResponse getContentResponse(URI uri, String acceptHeaderValue, RemoteRepo repo)
+    private static HttpResponse getContentResponse(URI uri, String acceptHeaderValue, RepoDto repo)
             throws IOException {
         log.debug("Getting the contents from {}", uri);
 
@@ -100,7 +99,7 @@ class GitHubClient implements SourceControlClient {
                 .returnResponse();
     }
 
-    private static Request getRequestWithAuth(RemoteRepo repo, Request request) {
+    private static Request getRequestWithAuth(RepoDto repo, Request request) {
         String accessToken = repo.getAccessToken();
         if (StringUtils.isNotEmpty(accessToken)) {
             log.debug("Using an access token");
@@ -148,7 +147,7 @@ class GitHubClient implements SourceControlClient {
         return result;
     }
 
-    private static URI createContentsUri(RemoteRepo repo, String directoryPath) throws
+    private static URI createContentsUri(RepoDto repo, String directoryPath) throws
             URISyntaxException {
 
         String path = String.format(GET_CONTENTS_TEMPLATE,

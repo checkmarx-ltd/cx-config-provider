@@ -1,6 +1,7 @@
 package com.cx.configprovider.interfaces;
 
 import com.cx.configprovider.dto.interfaces.ConfigResource;
+
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 
@@ -12,7 +13,7 @@ public interface ConfigProvider {
 
     Config initBaseResource(String appName, ConfigResource configSource) throws ConfigurationException;
 
-    ConfigObject mergeResources(String uid, ConfigResource configSource, ConfigObject configToMerge) throws ConfigurationException;
+    ConfigObject loadResources(String uid, ConfigResource configSource, ConfigObject configToMerge) throws ConfigurationException;
 
     ConfigObject loadResource(String uid, ConfigResource configSource) throws ConfigurationException;
 

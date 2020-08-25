@@ -1,8 +1,10 @@
 package com.cx.configprovider;
 
 import com.cx.configprovider.dto.interfaces.ConfigResource;
+
 import com.cx.configprovider.interfaces.ConfigProvider;
-import com.cx.configprovider.resource.MultipleResourcesImpl;
+import com.cx.configprovider.resource.MultipleResources;
+import com.cx.configprovider.resource.Parser;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValueType;
@@ -23,15 +25,15 @@ public class ConfigProviderImpl implements ConfigProvider {
     public Config initBaseResource(String appName, ConfigResource configSource) throws ConfigurationException {
 
         this.appName = appName;
-        Config config = configSource.parse();
+        Config config = Parser.parse(configSource);
         store(appName, config);
         return config;
     }
     
     @Override
-    public ConfigObject mergeResources(String uid, ConfigResource configSource, ConfigObject configToMerge) throws ConfigurationException {
+    public ConfigObject loadResources(String uid, ConfigResource configSource, ConfigObject configToMerge) throws ConfigurationException {
 
-        Config newConfig = configSource.parse();
+        Config newConfig = Parser.parse(configSource);
         Config mergedConfig = newConfig.withFallback(configToMerge);
         Config mergedWithBase = mergedConfig.withFallback(getBaseConfig());
         store(uid, mergedWithBase);
@@ -46,7 +48,7 @@ public class ConfigProviderImpl implements ConfigProvider {
      * @param uid
      * @param configResource containing a representation of one or several
      *        configuration files. In case of multiple files their will
-     *        be applied according to a policy. See {@link MultipleResourcesImpl}             
+     *        be applied according to a policy. See {@link MultipleResources}             
      * @throws ConfigurationException exception
      * @return ConfigObject representing a configuration tree
      */
@@ -54,7 +56,7 @@ public class ConfigProviderImpl implements ConfigProvider {
     public ConfigObject loadResource(String uid, ConfigResource configResource) throws ConfigurationException {
 
         ConfigObject baseConfig = getBaseConfig();
-        Config configToMerge = configResource.parse();
+        Config configToMerge = Parser.parse(configResource);
         Config mergedConfig = configToMerge.withFallback(baseConfig);
         store(uid, mergedConfig);
         return mergedConfig.root();
@@ -69,6 +71,7 @@ public class ConfigProviderImpl implements ConfigProvider {
         return Optional.ofNullable(configurationMap.get(uid)).map(config -> config.root())
         .orElse(null);
     }
+
 
     @Override
     public String getStringValue(String uid, String path){

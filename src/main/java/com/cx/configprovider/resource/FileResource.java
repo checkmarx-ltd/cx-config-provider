@@ -1,6 +1,7 @@
 package com.cx.configprovider.resource;
 
 import com.cx.configprovider.dto.ResourceType;
+import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
 import lombok.Getter;
 
@@ -14,12 +15,12 @@ import java.util.Optional;
 
 
 @Getter
-public class FileResourceImpl extends ConfigResourceImpl {
-;
+public class FileResource extends AbstractFileResource implements ConfigResource {
+
     private File file;
     
     
-    public FileResourceImpl(ResourceType type, String filepath) throws ConfigurationException {
+    public FileResource(ResourceType type, String filepath) throws ConfigurationException {
         file = new File(filepath);
         if(!file.exists()){
             throw new ConfigurationException("File not found: " + filepath);
@@ -29,7 +30,7 @@ public class FileResourceImpl extends ConfigResourceImpl {
     
   
     @Override
-    public Config parse() throws ConfigurationException {
+    Config loadConfig() throws ConfigurationException {
         if(ResourceType.YML.equals(type)){
             config = yamlToConfig(file);
         }else if(ResourceType.JSON.equals(type)){

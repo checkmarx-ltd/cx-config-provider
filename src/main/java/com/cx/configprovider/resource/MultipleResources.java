@@ -6,7 +6,6 @@ import com.typesafe.config.Config;
 import javax.naming.ConfigurationException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -14,23 +13,23 @@ import java.util.stream.Collectors;
  * The elements will be applied based on the order ot their addition to the class,
  * unless there is a rule for the order of applying of specific element types
  */
-public class MultipleResourcesImpl implements ConfigResource {
+public class MultipleResources extends ParsableResource implements ConfigResource {
 
-    List<ConfigResource> configSourceList = new LinkedList<>();
+    List<ParsableResource> configSourceList = new LinkedList<>();
 
-    public MultipleResourcesImpl(){
+    public MultipleResources(){
     }
     
-    public MultipleResourcesImpl(List<ConfigResource> configResources){
+    public MultipleResources(List<ParsableResource> configResources){
         add(configResources);
     }
     
-    public void add(List<ConfigResource> configResources){
+    public void add(List<ParsableResource> configResources){
         configSourceList.addAll(configResources);
         applyOrder();
     }
     
-    public void add(ConfigResource ConfigSource){
+    public void add(ParsableResource ConfigSource){
         configSourceList.add(ConfigSource);
         applyOrder();
     }
@@ -52,14 +51,14 @@ public class MultipleResourcesImpl implements ConfigResource {
      * @throws ConfigurationException exception
      */
     @Override
-    public Config parse() throws ConfigurationException {
+    Config loadConfig() throws ConfigurationException {
 
         Config configFull = null;
-        for (ConfigResource configSource : configSourceList ) {
+        for (ParsableResource configSource : configSourceList ) {
             if(configFull == null){
-                configFull = configSource.parse();
+                configFull = configSource.loadConfig();
             }else{
-                Config configCurrent = configSource.parse();
+                Config configCurrent = configSource.loadConfig();
                 configFull = configCurrent.withFallback(configFull);
             }
 
@@ -70,7 +69,7 @@ public class MultipleResourcesImpl implements ConfigResource {
 
     @Override
     public String getName() {
-        return configSourceList.stream().map(resource -> resource.getName().concat(" ")).collect(Collectors.toList()).toString();
+        return configSourceList.stream().map(resource -> ((ConfigResource)resource).getName().concat(" ")).collect(Collectors.toList()).toString();
     }
 
 }
