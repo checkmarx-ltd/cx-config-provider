@@ -1,10 +1,11 @@
 package com.cx.configprovider.resource;
 
 import com.cx.configprovider.dto.ResourceType;
+import com.cx.configprovider.dto.interfaces.ConfigResource;
 
-public class EnvPropResourceImpl extends PropResourceImpl  {
+public class EnvProperties extends PropertiesResource implements ConfigResource {
 
-    public EnvPropResourceImpl() {
+    public EnvProperties() {
         resourceType = ResourceType.ENV_VARIABLES;
     }
 
@@ -29,5 +30,6 @@ public class EnvPropResourceImpl extends PropResourceImpl  {
         String propertyValue = System.getProperty(propertyName);
         addPropertyValue(propertyName, path, propertyValue);
     }
+    
     
 }

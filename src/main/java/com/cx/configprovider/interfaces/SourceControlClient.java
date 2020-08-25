@@ -1,14 +1,13 @@
 package com.cx.configprovider.interfaces;
 
-import com.cx.configprovider.dto.RemoteRepo;
-import com.cx.configprovider.resource.RepoResourceImpl;
+import com.cx.configprovider.dto.RepoDto;
 
 import java.util.List;
 
 public interface SourceControlClient {
     
 
-    String downloadFileContent(String path, String filename, RemoteRepo repo);
+    String downloadFileContent(String path, String filename, RepoDto repo);
 
-    List<String> getDirectoryFilenames(RemoteRepo repoResource, String path);
+    List<String> getDirectoryFilenames(RepoDto repoResource, String path);
 }
