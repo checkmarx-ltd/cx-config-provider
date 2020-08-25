@@ -7,7 +7,7 @@ import com.typesafe.config.*;
 import javax.naming.ConfigurationException;
 import java.util.Properties;
 
-public class PropResourceImpl implements ConfigResource {
+public class PropertiesResource extends ParsableResource implements ConfigResource {
     
     protected ResourceType resourceType = ResourceType.PROPERTIES;
     Properties properties = new Properties();
@@ -42,7 +42,14 @@ public class PropResourceImpl implements ConfigResource {
     }
     
     @Override
-    public Config parse() throws ConfigurationException {
+    Config loadConfig() throws ConfigurationException {
         return ConfigFactory.parseProperties(properties);
     }
+
+    @Override
+    public String getName() {
+        return resourceType.name();
+    }
+    
+    
 }

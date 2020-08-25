@@ -3,7 +3,7 @@ github:
   configAsCode: cx.configuration
   
 ast:
-  apiUrl: appURL
-  token: appToken
+  apiUrl: astURL
+  token: astToken
   preset: presetFromAppYml
   incremental: false

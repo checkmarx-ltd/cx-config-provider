@@ -1,7 +1,6 @@
 package com.cx.configprovider.resource;
 
 import com.cx.configprovider.dto.ResourceType;
-import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -22,12 +21,12 @@ import java.net.URL;
 
 
 @Getter
-public abstract class ConfigResourceImpl implements ConfigResource{
+public abstract class AbstractFileResource extends ParsableResource {
 
     protected ResourceType type;
     protected Config config;
 
-    protected ConfigResourceImpl(){}
+    protected AbstractFileResource(){}
     
     Config jsonToConfig(String fileContent) {
         return ConfigFactory.parseString(fileContent);
