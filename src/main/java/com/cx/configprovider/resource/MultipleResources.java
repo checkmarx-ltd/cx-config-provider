@@ -29,8 +29,8 @@ public class MultipleResources extends ParsableResource implements ConfigResourc
         applyOrder();
     }
     
-    public void add(ParsableResource ConfigSource){
-        configSourceList.add(ConfigSource);
+    public void add(ParsableResource configSource){
+        configSourceList.add(configSource);
         applyOrder();
     }
 

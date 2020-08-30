@@ -33,43 +33,7 @@ public class RepoResource extends ParsableResource implements ConfigResource {
     private MultipleResources downloadedResource;
 
     private RepoDto repoDto;
-
-    /**
-     * @param apiBaseUrl  repository URL
-     * @param namespace namespace
-     * @param repoName repository name 
-     * @param branch repository branch
-     * @param accessToken repository access Token
-     * @param sourceProviderType sourceProviderType
-     * @param configAsCodeFileName a name of config-as-code file under root
-     * @param foldersToSearch a list of paths under repo root where the YML configuration files will be located
-     */
-    public RepoResource(String apiBaseUrl, String namespace, String repoName, String branch, String accessToken, SourceProviderType sourceProviderType, String configAsCodeFileName, List<String> foldersToSearch) {
-
-        buildRemoteRepo(apiBaseUrl, namespace, repoName, branch, accessToken, sourceProviderType);
-        this.configAsCodeFileName = configAsCodeFileName;
-        this.foldersToSearch = foldersToSearch;
-    }
-
-
-    /**
-     * Constructor which has only the repository details. Configuration files wll be located under the default 
-     * locations: config-as-code default name will be {@value #CX_CONFIG} and default configuration YML locations 
-     * will be {@value #DEFAULT_SEARCH_DIRECTORY}
-     * @param apiBaseUrl  repository URL
-     * @param namespace namespace
-     * @param repoName repository name 
-     * @param branch repository branch
-     * @param accessToken repository access Token
-     * @param sourceProviderType repository type 
-     */
-    public RepoResource( String apiBaseUrl, String namespace, String repoName, String branch, String accessToken, SourceProviderType sourceProviderType) {
-
-        buildRemoteRepo(apiBaseUrl, namespace, repoName, branch, accessToken, sourceProviderType);
-        this.foldersToSearch.add(DEFAULT_SEARCH_DIRECTORY);
-        setConfigAsCodeFileName(CX_CONFIG);
-    }
-
+  
     /**
      * Constructor which has only the repository details. 
      * Default configuration YML locations will be {@value #DEFAULT_SEARCH_DIRECTORY}
@@ -78,35 +42,17 @@ public class RepoResource extends ParsableResource implements ConfigResource {
      * @param repoName repository name 
      * @param branch repository branch
      * @param accessToken repository access Token
-     * @param sourceProviderType repository type 
-     * @param configAsCodeFileName a name of config-as-code file under root
+     * @param sourceProviderType repository type
      */
-    public RepoResource( String apiBaseUrl, String namespace, String repoName, String branch, String accessToken, SourceProviderType sourceProviderType, String configAsCodeFileName) {
+    public RepoResource( String apiBaseUrl, String namespace, String repoName, String branch, String accessToken, SourceProviderType sourceProviderType) {
 
         buildRemoteRepo(apiBaseUrl, namespace, repoName, branch, accessToken, sourceProviderType);
         this.foldersToSearch.add(DEFAULT_SEARCH_DIRECTORY);
-        this.configAsCodeFileName = configAsCodeFileName;
+        this.configAsCodeFileName = CX_CONFIG;
 
     }
 
-    /**
-     * Constructor which has only the repository details.  
-     * config-as-code default name will be {@value #CX_CONFIG} 
-     * @param apiBaseUrl  repository URL
-     * @param namespace namespace
-     * @param repoName repository name 
-     * @param branch repository branch
-     * @param accessToken repository access Token
-     * @param sourceProviderType repository type 
-     * @param foldersToSearch a list of paths under repo root where the YML configuration files will be located
-     */
-    public RepoResource( String apiBaseUrl, String namespace, String repoName, String branch, String accessToken, SourceProviderType sourceProviderType, List<String> foldersToSearch) {
-
-        buildRemoteRepo(apiBaseUrl, namespace, repoName, branch, accessToken, sourceProviderType);
-        this.foldersToSearch = foldersToSearch;
-        setConfigAsCodeFileName(CX_CONFIG);
-    }
-    
+   
     public void setConfigAsCodeFileName(String configAsCodeFileName) {
         this.configAsCodeFileName = configAsCodeFileName;
     }

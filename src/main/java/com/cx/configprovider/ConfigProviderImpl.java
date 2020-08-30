@@ -79,7 +79,7 @@ public class ConfigProviderImpl implements ConfigProvider {
     }
 
     @Override
-    public Map getMapFromConfig(String uid, String pathToMap){
+    public Map<String, Object> getMapFromConfig(String uid, String pathToMap){
 
         Object result = getConfigObject(uid).toConfig().getValue(pathToMap).unwrapped();
         

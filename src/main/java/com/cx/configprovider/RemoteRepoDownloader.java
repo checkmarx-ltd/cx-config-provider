@@ -4,7 +4,7 @@ import com.cx.configprovider.dto.*;
 import com.cx.configprovider.dto.interfaces.ConfigResource;
 
 import com.cx.configprovider.resource.ParsableResource;
-import com.cx.configprovider.resource.RawResource;
+import com.cx.configprovider.resource.FileContentResource;
 import com.cx.configprovider.exceptions.ConfigProviderException;
 import com.cx.configprovider.interfaces.SourceControlClient;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class RemoteRepoDownloader {
-    private static final int SUPPORTED_FILE_COUNT = 1;
 
     private static final EnumMap<SourceProviderType, Class<? extends SourceControlClient>> sourceProviderMapping;
 
@@ -54,11 +53,11 @@ public class RemoteRepoDownloader {
         if(StringUtils.isEmpty(suffix)){
             return emptyList;
         }
-        List matchingFiles = folderFiles.stream()
+        List<String> matchingFiles = folderFiles.stream()
                 .filter(name -> name.endsWith(suffix))
                 .collect(Collectors.toList());
         
-        if(matchingFiles.size()>0){
+        if(!matchingFiles.isEmpty()){
             return downloadFiles(client, repo, folder,matchingFiles);
         }else {
             return emptyList;
@@ -85,7 +84,7 @@ public class RemoteRepoDownloader {
             } else {
                 resources = loadFileBySuffix(client, repo, folder, suffixToFind, filenames);
             }
-            if (resources.size() == 0) {
+            if (resources.isEmpty()) {
                 resources = downloadFiles(client, repo, folder, filenames);
             }
         }
@@ -134,7 +133,7 @@ public class RemoteRepoDownloader {
         return clientClass;
     }
 
-    private List<ParsableResource> downloadFiles(SourceControlClient client, RepoDto repo, String folder, List<String> filenames) throws ConfigurationException {
+    private List<ParsableResource> downloadFiles(SourceControlClient client, RepoDto repo, String folder, List<String> filenames)  {
         List<ParsableResource> resources = new LinkedList<>();
         if (filenames == null || filenames.isEmpty()) {
             throw new IllegalArgumentException("file names can not be empty");
@@ -142,9 +141,9 @@ public class RemoteRepoDownloader {
             filenames.stream().sorted().forEachOrdered(filename ->{
                 String fileContent = client.downloadFileContent(folder, filename, repo);
                 log.info("Config-as-code was found with content length: {}", fileContent.length());
-                RawResource configResourceImpl = null;
+                FileContentResource configResourceImpl = null;
 
-                configResourceImpl = new RawResource(fileContent, filename);
+                configResourceImpl = new FileContentResource(fileContent, filename);
                
                 resources.add(configResourceImpl);
             });

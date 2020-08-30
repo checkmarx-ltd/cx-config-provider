@@ -19,14 +19,14 @@ public class URLResource extends AbstractFileResource implements ConfigResource 
     private URL url;
 
     
-    public void URLResourceImpl(ResourceType type, URL url) throws ConfigurationException {
+    public void URLResourceImpl(ResourceType type, URL url) {
         this.type = type;
         this.url = url;
     }
     
     
     @Override
-    Config loadConfig() throws ConfigurationException {
+    Config loadConfig() {
         if(ResourceType.YML.equals(type)){
             config = yamlToConfig(url);
         }else if(ResourceType.JSON.equals(type)){

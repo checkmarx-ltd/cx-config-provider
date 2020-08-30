@@ -9,34 +9,37 @@ import javax.naming.ConfigurationException;
 import java.util.Optional;
 
 /**
- * Represents a non-parsed ("raw") config-as-code.
+ * Contains String content of resources of type Yml or Json
  */
-
-
 @Getter
-public class RawResource extends AbstractFileResource implements ConfigResource {
+public class FileContentResource extends AbstractFileResource implements ConfigResource {
     private String content;
-    private ResourceType type;
     private String  name;
-    private Config config;
 
-    private RawResource(){
+    private FileContentResource(){
         super();
     }
     
-    public RawResource(ResourceType type, String fileContent, String name)  {
+    public FileContentResource(ResourceType type, String fileContent, String name)  {
         this.type = type;
         this.content = fileContent;
         this.name = name;
     }
 
-    public RawResource(String fileContent, String name) {
-        if(name.toUpperCase().endsWith(ResourceType.YML.toString().toUpperCase())){
+    public FileContentResource(String fileContent, String name) {
+        if(isYml(name)){
             this.type = ResourceType.YML;
         }else{
             this.type = ResourceType.JSON;
         }
         
+        this.content = fileContent;
+        this.name = name;
+    }
+
+    public FileContentResource(String fileContent, String name, ResourceType type) {
+        
+        this.type = type;
         this.content = fileContent;
         this.name = name;
     }

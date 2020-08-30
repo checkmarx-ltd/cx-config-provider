@@ -27,7 +27,7 @@ public class PropertyLoader {
     }
 
     public String getFileUrlInClassloader(String filename) throws FileNotFoundException {
-        Properties properties = new Properties();
+        
         ClassLoader classLoader = PropertyLoader.class.getClassLoader();
         URL resource = classLoader.getResource(filename);
         if (resource == null) {
@@ -60,7 +60,7 @@ public class PropertyLoader {
             loadProperties();
         }
         
-        String envPropertyName = property.toUpperCase().replaceAll("\\.", "_").trim();
+        String envPropertyName = property.toUpperCase().replace("\\.", "_").trim();
         String envPropertyValue = System.getenv(envPropertyName);
         log.info(envPropertyName + " : " + envPropertyValue);
 
