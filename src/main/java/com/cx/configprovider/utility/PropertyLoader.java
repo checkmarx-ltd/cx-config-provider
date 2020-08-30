@@ -89,7 +89,7 @@ public class PropertyLoader {
     }
 
     private String toConfigPath(String variableName) {
-        return variableName.toLowerCase().replaceAll("_", "\\.{1}").trim();
+        return variableName.toLowerCase().replace("_", "\\.").trim();
     }
 
     private String toEnvVariable(String variableName) {
