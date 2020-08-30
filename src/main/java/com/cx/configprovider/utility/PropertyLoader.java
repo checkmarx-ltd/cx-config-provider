@@ -63,7 +63,7 @@ public class PropertyLoader {
             loadProperties();
         }
         
-        String envPropertyName = normalize(property);
+        String envPropertyName = toEnvVariable(property);
         String envPropertyValue = System.getenv(envPropertyName);
         log.info(envPropertyName + " : " + envPropertyValue);
 
@@ -79,7 +79,7 @@ public class PropertyLoader {
         for ( Map.Entry<String, String> envVar : env.entrySet()) {
             String value = envVar.getValue();
             if(StringUtils.isNotEmpty(value)) {
-                String parsedPropertyName = normalize(envVar.getKey());
+                String parsedPropertyName = toConfigPath(envVar.getKey());
                 envVariables.put(parsedPropertyName, value);
                 log.info(envVar + " : " + value);
             }
@@ -88,7 +88,11 @@ public class PropertyLoader {
         return envVariables;
     }
 
-    private String normalize(String variableName) {
+    private String toConfigPath(String variableName) {
         return variableName.toLowerCase().replaceAll("\\.", "_").trim();
+    }
+
+    private String toEnvVariable(String variableName) {
+        return variableName.toUpperCase().replaceAll("\\.", "_").trim();
     }
 }
