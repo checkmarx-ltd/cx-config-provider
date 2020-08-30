@@ -60,7 +60,7 @@ public class PropertyLoader {
             loadProperties();
         }
         
-        String envPropertyName = property.toUpperCase().replace("\\.", "_").trim();
+        String envPropertyName = property.toUpperCase().replaceAll("\\.", "_").trim();
         String envPropertyValue = System.getenv(envPropertyName);
         log.info(envPropertyName + " : " + envPropertyValue);
 
