@@ -45,7 +45,7 @@ public class MultipleResources extends ParsableResource implements ConfigResourc
     /**
      * Converts a list on configSources added to the class to a config
      * tree while applying a specified order. An element which has the 
-     * same name and path will be truncated by the same element as per 
+     * same name and path will be overridden by the same element as per 
      * the applied hierarchy
      * @return Config tree
      * @throws ConfigurationException exception

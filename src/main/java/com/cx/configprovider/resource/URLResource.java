@@ -5,7 +5,6 @@ import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
 import lombok.Getter;
 
-import javax.naming.ConfigurationException;
 import java.net.URL;
 
 /**

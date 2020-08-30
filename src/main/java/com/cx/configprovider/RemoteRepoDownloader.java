@@ -29,7 +29,7 @@ public class RemoteRepoDownloader {
     private RepoDto repoDto;
 
 
-    public ParsableResource loadFileByName(SourceControlClient client, RepoDto repo, String folder, String fileToFind, List<String> filenames ) throws ConfigurationException {
+    public ParsableResource loadFileByName(SourceControlClient client, RepoDto repo, String folder, String fileToFind, List<String> filenames )  {
         
         if(StringUtils.isEmpty(fileToFind)){
             return null;
@@ -46,7 +46,7 @@ public class RemoteRepoDownloader {
     }
 
 
-    public List<ParsableResource> loadFileBySuffix(SourceControlClient client, RepoDto repo, String folder, String suffix, List<String> folderFiles ) throws ConfigurationException {
+    public List<ParsableResource> loadFileBySuffix(SourceControlClient client, RepoDto repo, String folder, String suffix, List<String> folderFiles ) {
 
         List<ParsableResource> emptyList = new LinkedList<>();
         

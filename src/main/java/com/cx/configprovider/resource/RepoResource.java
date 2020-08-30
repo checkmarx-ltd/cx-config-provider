@@ -68,7 +68,7 @@ public class RepoResource extends ParsableResource implements ConfigResource {
      * 1. config-as-code in the root of the repository.
      *   (The name of the config-as-code file is set by {@link #setConfigAsCodeFileName(String)} )
      * 2. yml files in .checkmarx folder in alphabetical order  
-     * yml files elements will truncate the elements with the same name and path in config-as-code 
+     * yml files elements will override the elements with the same name and path in config-as-code 
      * @return Config object representing ap arsed configuration consisting of all resources
      * @throws ConfigurationException exception
      */
@@ -82,14 +82,14 @@ public class RepoResource extends ParsableResource implements ConfigResource {
         List<ParsableResource> listRawConfigYmls = downloader.downloadRepoFiles(getRepoDto(), foldersToSearch, null, YML);
 
         //add config-as-code to be the first one in the list - so that hte ymls be applied over it
-        //ymls truncate configuration elements with the same name and path in config-as-code
+        //ymls override configuration elements with the same name and path in config-as-code
         listRawConfigYmls.add(0,configAsCodeResource);
 
         MultipleResources multipleResourcesImpl = new MultipleResources(listRawConfigYmls);
 
         this.downloadedResource = multipleResourcesImpl;
         //parse will apply configuration file based on their order in the list
-        //meaning ymls truncate configuration elements with the same name and path in config-as-code
+        //meaning ymls override configuration elements with the same name and path in config-as-code
         return multipleResourcesImpl.loadConfig();
 
     }
