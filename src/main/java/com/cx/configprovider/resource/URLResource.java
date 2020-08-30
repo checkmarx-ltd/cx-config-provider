@@ -5,12 +5,9 @@ import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
 import lombok.Getter;
 
-import javax.naming.ConfigurationException;
 import java.net.URL;
 
-/**
- * Represents a non-parsed ("raw") config-as-code.
- */
+
 
 
 @Getter
@@ -19,14 +16,18 @@ public class URLResource extends AbstractFileResource implements ConfigResource 
     private URL url;
 
     
-    public void URLResourceImpl(ResourceType type, URL url) throws ConfigurationException {
+    public URLResource(ResourceType type, URL url) {
         this.type = type;
         this.url = url;
     }
-    
-    
+
+
+    /**
+     * Currently not implemented - throws UnsupportedOperationException
+     * @return
+     */
     @Override
-    Config loadConfig() throws ConfigurationException {
+    Config loadConfig() {
         if(ResourceType.YML.equals(type)){
             config = yamlToConfig(url);
         }else if(ResourceType.JSON.equals(type)){

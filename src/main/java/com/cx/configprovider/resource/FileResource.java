@@ -10,9 +10,8 @@ import java.io.File;
 import java.util.Optional;
 
 /**
- * Represents a non-parsed ("raw") config-as-code.
+ * Contains resources of type Yml or Json stored in file system
  */
-
 
 @Getter
 public class FileResource extends AbstractFileResource implements ConfigResource {

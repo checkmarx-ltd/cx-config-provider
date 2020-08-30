@@ -21,7 +21,7 @@ public interface ConfigProvider {
 
     String getStringValue(String uid, String path);
 
-    Map getMapFromConfig(String uid, String path);
+    Map<String, Object> getMapFromConfig(String uid, String path);
 
     List<String> getStringListFromConfig(String uid, String xpath);
 

@@ -43,7 +43,7 @@ public class ConfigProviderImpl implements ConfigProvider {
     /**
      * Applies elements from input configResource upon base resource 
      * elements already stored in the the ConfigProvider. Elements from
-     * the input ConfigResource with the same name and path will truncate
+     * the input ConfigResource with the same name and path will override
      * those form the base resource.
      * @param uid
      * @param configResource containing a representation of one or several
@@ -79,7 +79,7 @@ public class ConfigProviderImpl implements ConfigProvider {
     }
 
     @Override
-    public Map getMapFromConfig(String uid, String pathToMap){
+    public Map<String, Object> getMapFromConfig(String uid, String pathToMap){
 
         Object result = getConfigObject(uid).toConfig().getValue(pathToMap).unwrapped();
         
