@@ -4,7 +4,6 @@ import com.cx.configprovider.dto.ResourceType;
 import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.cx.configprovider.utility.PropertyLoader;
 
-import java.util.Map;
 
 public class EnvProperties extends PropertiesResource implements ConfigResource {
 

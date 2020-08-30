@@ -76,12 +76,12 @@ public class PropertyLoader {
         
         Map<String, String> env = System.getenv();
 
-        for (String variableName : env.keySet()) {
-            String value = env.get(variableName);
+        for ( Map.Entry<String, String> envVar : env.entrySet()) {
+            String value = envVar.getValue();
             if(StringUtils.isNotEmpty(value)) {
-                String parsedPropertyName = normalize(variableName);
-                envVariables.put(parsedPropertyName, env.get(variableName));
-                log.info(variableName + " : " + value);
+                String parsedPropertyName = normalize(envVar.getKey());
+                envVariables.put(parsedPropertyName, value);
+                log.info(envVar + " : " + value);
             }
         }
         
