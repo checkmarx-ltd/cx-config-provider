@@ -24,9 +24,7 @@ public class ConfigProviderAPIsTestSteps {
     
     private static final String GITHUB_REPO = "configProviderTests";
     private static final String GITHUB_NAMESPACE = "cxflowtestuser";
-    private static final String BRANCH1 = "test1";
-    private static final String BRANCH2 = "test2";
-    private static final String BRANCH3 = "test3";
+
     private static final String GITHUB_TOKEN = "github.token";
     private static final String GITHUB_API_URL = "https://api.github.com";
     private static final String APPLICATION_TEST_API_YML = "application-test-api.yml";
@@ -34,15 +32,14 @@ public class ConfigProviderAPIsTestSteps {
     private static final String APP_NAME = "ConfigProviderAPIsTest";
     private static final String FLOW_1 = "flow1";
     private static final String ENV_PROP_GIT_HUB_TOKEN = "envPropGitHubToken";
-    private static final String GITHUB_TOKEN_FROM_APP = "githubTokenFromApp";
+
     private static final String GITHUB_CONFIG_AS_CODE = "github.configAsCode";
     private static final String AST_PRESET = "ast.preset";
     private static final String AST_TOKEN = "ast.token";
-    private static final String PRESET_FROM_CONFIG_AS_CODE = "presetFromConfigAsCode";
+
     private static final String PRESET_FROM_GITHUB_YML = "presetYmlB";
     private static final String JIRA_PROJECT = "jira.project";
-    private static final String JIRA_PROJECT_FROM_GITHUB_YML = "jiraProjectB";
-    private static final String PRESET_FROM_SECRETS_YML = "presetFromAppSecretsYml";
+
 
     static PropertyLoader props = new PropertyLoader();
     private static SourceProviderType providerType;
@@ -61,7 +58,7 @@ public class ConfigProviderAPIsTestSteps {
         configProvider.clear();
     }
     
-    @Given("env variable truncates application.yml property")
+    @Given("env variable overrides application.yml property")
     public void loadAppYmlAndThenEnvVars(){
         try {
             loadAppYml();
@@ -88,7 +85,7 @@ public class ConfigProviderAPIsTestSteps {
         return resource;
     }
 
-    @Given("application.yml properties truncate env variables")
+    @Given("application.yml properties overrides env variables")
     public void loadAppEnvVarsAndThenApplicationYml(){
         try {
             String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
@@ -148,7 +145,7 @@ public class ConfigProviderAPIsTestSteps {
         configProvider.initBaseResource(FLOW_1, multipleResources);
     }
 
-    @And ("the order of truncation will be based on the order of the files added to the MultipleResourcesImpl")
+    @And ("the order of override will be based on the order of the files added to the MultipleResourcesImpl")
     public void doNothing(){}
 
     @And ("AST token {string} and AST preset {string} will be taken from application-secrets.yml")
@@ -167,8 +164,8 @@ public class ConfigProviderAPIsTestSteps {
     }
     
 
-    @Then("GITHUB token from env variables is truncated by the {string} from application.yml")
-    @Then("GITHUB token from application-test-api.yml is truncated by {string} loaded from the env variables")
+    @Then("GITHUB token from env variables is overridden by the {string} from application.yml")
+    @Then("GITHUB token from application-test-api.yml is overridden by {string} loaded from the env variables")
     public void validateGithubToken(String resultToken){
         String value = extractGithubTokenFromBaseResource(FLOW_1);
         assertEquals(resultToken, value);
@@ -178,15 +175,15 @@ public class ConfigProviderAPIsTestSteps {
         return configProvider.getConfigObject(appName).toConfig().getString(GITHUB_TOKEN);
     }
 
-    @Then("AST preset from application.yml is truncated by the preset from config-as-code {string}")
-    @Then("AST preset from application.yml and preset from config-as-code is truncated by the preset from config-as-code.yml {string}")
-    @And("AST preset from application.yml and preset from config-as-code is truncated by the preset from b.yml {string}")
+    @Then("AST preset from application.yml is overridden by the preset from config-as-code {string}")
+    @Then("AST preset from application.yml and preset from config-as-code is overridden by the preset from config-as-code.yml {string}")
+    @And("AST preset from application.yml and preset from config-as-code is overridden by the preset from b.yml {string}")
     public void validatePresetFromConfigAsCode(String presetResult){
         String value = configProvider.getConfigObject(FLOW_1).toConfig().getString(AST_PRESET);
         assertEquals(presetResult, value);
     }
 
-    @And("mutual parameter jira.project from config-as-code and from a.yml will be truncated by the {string} from b.yml")
+    @And("mutual parameter jira.project from config-as-code and from a.yml will be overridden by the {string} from b.yml")
     public void validateMutualParamsFromGithubYml(String expectedJiraProjectValue){
         String valuePreset = configProvider.getConfigObject(FLOW_1).toConfig().getString(AST_PRESET);
         assertEquals(PRESET_FROM_GITHUB_YML, valuePreset);

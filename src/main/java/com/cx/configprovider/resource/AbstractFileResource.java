@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Represents a non-parsed ("raw") config-as-code.
@@ -27,6 +28,14 @@ public abstract class AbstractFileResource extends ParsableResource {
     protected Config config;
 
     protected AbstractFileResource(){}
+
+    protected static boolean isYml(String name) {
+        return name.toUpperCase().endsWith(ResourceType.YML.toString().toUpperCase());
+    }
+
+    protected static boolean isJson(String name) {
+        return name.toUpperCase().endsWith(ResourceType.YML.toString().toUpperCase());
+    }
     
     Config jsonToConfig(String fileContent) {
         return ConfigFactory.parseString(fileContent);
@@ -57,14 +66,14 @@ public abstract class AbstractFileResource extends ParsableResource {
         return ConfigFactory.parseURL(file);
     }
     
-    Config yamlToConfig(URL url) throws ConfigurationException {
+    Config yamlToConfig(URL url)  {
         throw new UnsupportedOperationException();
     }
 
     Config yamlToConfig(File file) throws ConfigurationException {
 
         try {
-            String yamlContent = IOUtils.toString(new FileInputStream(file.getPath()), "UTF-8");
+            String yamlContent = IOUtils.toString(new FileInputStream(file.getPath()), StandardCharsets.UTF_8);
 
             return yamlToConfig(yamlContent, file.getPath()) ;
 
