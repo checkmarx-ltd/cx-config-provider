@@ -16,10 +16,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Represents a non-parsed ("raw") config-as-code.
- */
-
 
 @Getter
 public abstract class AbstractFileResource extends ParsableResource {
@@ -33,9 +29,6 @@ public abstract class AbstractFileResource extends ParsableResource {
         return name.toUpperCase().endsWith(ResourceType.YML.toString().toUpperCase());
     }
 
-    protected static boolean isJson(String name) {
-        return name.toUpperCase().endsWith(ResourceType.YML.toString().toUpperCase());
-    }
     
     Config jsonToConfig(String fileContent) {
         return ConfigFactory.parseString(fileContent);

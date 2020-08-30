@@ -4,7 +4,7 @@ Feature: Configuration provider external apis tests
     #      - and GITHUB token is defined in environment
     #      - and config provider is initialized by loading application-test-api.yml
     #      - and env properties are loaded using config provider
-  Scenario Outline: Config provider loads data from env variables and from application.yml 
+  Scenario Outline: Config provider loads data of a GITHUB_TOKEN env property and from application.yml 
                     and env variable overrides application.yml property
     Given env variable overrides application.yml property
     Then GITHUB token from application-test-api.yml is overridden by "<github_token>" loaded from the env variables
@@ -27,7 +27,7 @@ Feature: Configuration provider external apis tests
    #   - and GITHUB token application-test-api.yml
    #   - and config provider is initialized by loading environment
    #   - and application-test-api.yml is loaded using config provider
-  Scenario Outline: application.yml properties over env variable
+  Scenario Outline: application.yml properties over GITHUB_TOKEN from env variable
     Given application.yml properties overrides env variables
     Then GITHUB token from env variables is overridden by the "<github_token>" from application.yml
     Examples:
@@ -77,3 +77,13 @@ Feature: Configuration provider external apis tests
     Examples:
       | branch | jira.project | preset_result |
       | test3  | jiraProjectB | presetYmlB    |
+
+    
+  Scenario Outline: Config provider data from application.yml and then 
+                    and it loads all environment variables defined in the operation system,
+                    therefore env variables override application.yml properties
+    Given Config provider loads all environment variables and then data from application.yml
+    Then "<path>" env variable will override the one from application-test-api.yml
+    Examples:
+      | path | 
+      | path | 
