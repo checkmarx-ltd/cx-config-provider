@@ -18,7 +18,7 @@ public class URLResource extends AbstractFileResource implements ConfigResource 
     private URL url;
 
     
-    public void URLResourceImpl(ResourceType type, URL url) {
+    public URLResource(ResourceType type, URL url) {
         this.type = type;
         this.url = url;
     }
