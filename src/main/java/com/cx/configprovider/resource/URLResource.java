@@ -7,9 +7,7 @@ import lombok.Getter;
 
 import java.net.URL;
 
-/**
- * Represents a non-parsed ("raw") config-as-code.
- */
+
 
 
 @Getter
@@ -22,8 +20,12 @@ public class URLResource extends AbstractFileResource implements ConfigResource 
         this.type = type;
         this.url = url;
     }
-    
-    
+
+
+    /**
+     * Currently not implemented - throws UnsupportedOperationException
+     * @return
+     */
     @Override
     Config loadConfig() {
         if(ResourceType.YML.equals(type)){
