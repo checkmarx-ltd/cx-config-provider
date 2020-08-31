@@ -25,6 +25,9 @@ public class FileResource extends AbstractFileResource implements ConfigResource
             throw new ConfigurationException("File not found: " + filepath);
         }
         this.type = type;
+        if(!type.equals(ResourceType.JSON) && !type.equals(ResourceType.YML)) {
+            throw new UnsupportedOperationException();
+        }
     }
     
   

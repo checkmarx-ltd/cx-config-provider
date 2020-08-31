@@ -43,7 +43,14 @@ public class FileContentResource extends AbstractFileResource implements ConfigR
         this.content = fileContent;
         this.name = name;
     }
-    
+
+    /**
+     * Converts file String content of type Yml or Json to Config object.
+     * Other types of files are not supported.
+     * @return Config object
+     * @throws ConfigurationException exception when the string content of the resource
+     * can not be converted to Config object
+     */
     @Override
     public Config loadConfig() throws ConfigurationException {
         if(ResourceType.YML.equals(type)){

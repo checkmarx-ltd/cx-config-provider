@@ -2,11 +2,18 @@ package com.cx.configprovider.resource;
 
 import com.cx.configprovider.dto.ResourceType;
 import com.cx.configprovider.dto.interfaces.ConfigResource;
+import com.cx.configprovider.utility.PropertyLoader;
+
 
 public class EnvProperties extends PropertiesResource implements ConfigResource {
 
-    public EnvProperties() {
+    public EnvProperties(boolean loadEnvVariables)
+    {
         resourceType = ResourceType.ENV_VARIABLES;
+
+        if(loadEnvVariables) {
+            properties = new PropertyLoader().loadEnvVariables();
+        }
     }
 
     /**
@@ -31,5 +38,6 @@ public class EnvProperties extends PropertiesResource implements ConfigResource 
         addPropertyValue(propertyName, path, propertyValue);
     }
     
+
     
 }

@@ -1,6 +1,6 @@
 package com.cx.configprovider.apis;
 
-import com.cx.configprovider.ConfigProviderImpl;
+import com.cx.configprovider.ConfigProvider;
 import com.cx.configprovider.dto.ResourceType;
 import com.cx.configprovider.dto.SourceProviderType;
 import com.cx.configprovider.resource.*;
@@ -45,12 +45,12 @@ public class ConfigProviderAPIsTestSteps {
     private static SourceProviderType providerType;
 
     private Exception exception;
-    private ConfigProviderImpl configProvider;
+    private ConfigProvider configProvider;
 
 
     @Before()
     public void init(){
-        configProvider = new ConfigProviderImpl();
+        configProvider = ConfigProvider.getInstance();
     }
     
     @After()
@@ -62,13 +62,23 @@ public class ConfigProviderAPIsTestSteps {
     public void loadAppYmlAndThenEnvVars(){
         try {
             loadAppYml();
-            loadEnVProperties();
+            loadEnvProperties(false);
             
         } catch (FileNotFoundException | ConfigurationException e) {
             Assert.fail(e.getMessage());
         }
     }
     
+    @Given("Config provider loads all environment variables and then data from application.yml")
+    public void loadAppYmlAndThenAllEnvVars(){
+        try {
+            loadAppYml();
+            loadEnvProperties(true);
+            
+        } catch (FileNotFoundException | ConfigurationException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
 
     private ConfigObject loadPropertiesRealToken() throws ConfigurationException {
         PropertiesResource envPropResourceImpl = new PropertiesResource();
@@ -78,8 +88,8 @@ public class ConfigProviderAPIsTestSteps {
         return resource;
     }
     
-    private ConfigObject loadEnVProperties() throws ConfigurationException {
-        EnvProperties envPropResourceImpl = new EnvProperties();
+    private ConfigObject loadEnvProperties(boolean loadAll) throws ConfigurationException {
+        EnvProperties envPropResourceImpl = new EnvProperties(loadAll);
         envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
         ConfigObject resource = configProvider.loadResource(FLOW_1, envPropResourceImpl);
         return resource;
@@ -89,7 +99,7 @@ public class ConfigProviderAPIsTestSteps {
     public void loadAppEnvVarsAndThenApplicationYml(){
         try {
             String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
-            EnvProperties envPropResourceImpl = new EnvProperties();
+            EnvProperties envPropResourceImpl = new EnvProperties(false);
             envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
             configProvider.initBaseResource(APP_NAME, envPropResourceImpl);
             FileResource fileResource = new FileResource(ResourceType.YML,filePath);
@@ -130,11 +140,11 @@ public class ConfigProviderAPIsTestSteps {
 
     @Given ("application.yml, env variables and application-secrets.yml are loaded into initial resource using MultipleResourcesImpl")
     public void testBaseResourceUsingMultipleResources() throws FileNotFoundException, ConfigurationException{
-        String appYml = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
-        String appSecretsYml = props.getFileUrlInClassloader(APPLICATION_SECRETS_TEST_API_YML);
-        FileResource appYmlResource = new FileResource(ResourceType.YML, appYml);
-        FileResource appSecretsYmlResource = new FileResource(ResourceType.YML, appSecretsYml);
-        EnvProperties envPropResourceImpl = new EnvProperties();
+        String appYmlPath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
+        String appSecretsYmlPath = props.getFileUrlInClassloader(APPLICATION_SECRETS_TEST_API_YML);
+        FileResource appYmlResource = new FileResource(ResourceType.YML, appYmlPath);
+        FileResource appSecretsYmlResource = new FileResource(ResourceType.YML, appSecretsYmlPath);
+        EnvProperties envPropResourceImpl = new EnvProperties(false);
         envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
 
         MultipleResources multipleResources = new MultipleResources();
@@ -170,6 +180,18 @@ public class ConfigProviderAPIsTestSteps {
         String value = extractGithubTokenFromBaseResource(FLOW_1);
         assertEquals(resultToken, value);
     }
+    
+    @Then("{string} env variable will override the one from application-test-api.yml")
+    public void varifyEnvVariables(String pathEnvVar){
+        
+        Assert.assertTrue(configProvider.getConfigObject(FLOW_1).keySet().contains(pathEnvVar));
+
+        String path = configProvider.getConfigObject(FLOW_1).toConfig().getString(pathEnvVar);
+
+        Assert.assertNotEquals(path, "appPath");
+        
+    }
+
 
     private String extractGithubTokenFromBaseResource(String appName) {
         return configProvider.getConfigObject(appName).toConfig().getString(GITHUB_TOKEN);

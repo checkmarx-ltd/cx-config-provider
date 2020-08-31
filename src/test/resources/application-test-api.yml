@@ -7,3 +7,5 @@ ast:
   token: astToken
   preset: presetFromAppYml
   incremental: false
+  
+path: appPath
