@@ -19,7 +19,11 @@ public class MultipleResources extends ParsableResource implements ConfigResourc
 
     public MultipleResources(){
     }
-    
+
+    public MultipleResources(ParsableResource single) {
+        add(single);
+    }
+
     public MultipleResources(List<ParsableResource> configResources){
         add(configResources);
     }
@@ -51,14 +55,14 @@ public class MultipleResources extends ParsableResource implements ConfigResourc
      * @throws ConfigurationException exception
      */
     @Override
-    Config loadConfig() throws ConfigurationException {
+    public Config load() throws ConfigurationException {
 
         Config configFull = null;
         for (ParsableResource configSource : configSourceList ) {
             if(configFull == null){
-                configFull = configSource.loadConfig();
+                configFull = configSource.load();
             }else{
-                Config configCurrent = configSource.loadConfig();
+                Config configCurrent = configSource.load();
                 configFull = configCurrent.withFallback(configFull);
             }
 

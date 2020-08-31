@@ -7,7 +7,6 @@ import lombok.Getter;
 
 import javax.naming.ConfigurationException;
 import java.io.File;
-import java.util.Optional;
 
 /**
  * Contains resources of type Yml or Json stored in file system
@@ -32,7 +31,7 @@ public class FileResource extends AbstractFileResource implements ConfigResource
     
   
     @Override
-    Config loadConfig() throws ConfigurationException {
+    Config load() throws ConfigurationException {
         if(ResourceType.YML.equals(type)){
             config = yamlToConfig(file);
         }else if(ResourceType.JSON.equals(type)){
@@ -43,8 +42,6 @@ public class FileResource extends AbstractFileResource implements ConfigResource
 
     @Override
     public String getName() {
-        return Optional.ofNullable(file.getPath()).orElse(type.name()) ;
+        return file.getPath();
     }
-
-
 }

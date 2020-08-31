@@ -1,14 +1,14 @@
-package com.checkmarx.configprovider.resource;
+package com.cx.configprovider.resource;
 
-import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
-import com.checkmarx.configprovider.dto.RepoDto;
-import com.checkmarx.configprovider.RemoteRepoDownloader;
-import com.checkmarx.configprovider.dto.SourceProviderType;
+import com.cx.configprovider.RemoteRepoDownloader;
+import com.cx.configprovider.dto.RepoDto;
+import com.cx.configprovider.dto.SourceProviderType;
+import com.cx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
 import lombok.Getter;
 
 import javax.naming.ConfigurationException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -73,10 +73,10 @@ public class RepoResource extends ParsableResource implements ConfigResource {
      * @throws ConfigurationException exception
      */
     @Override
-    Config loadConfig() throws ConfigurationException {
+    Config load() throws ConfigurationException {
         
         //first load config-as-code from the root of the repo (default) or other folder set 
-        ParsableResource configAsCodeResource = downloader.downloadRepoFiles(getRepoDto(), Arrays.asList(REPO_ROOT), configAsCodeFileName, null).get(0);
+        ParsableResource configAsCodeResource = downloader.downloadRepoFiles(getRepoDto(), Collections.singletonList(REPO_ROOT), configAsCodeFileName, null).get(0);
 
         //then load config Ymls from .checkmarx folder (default) and other from folders set 
         List<ParsableResource> listRawConfigYmls = downloader.downloadRepoFiles(getRepoDto(), foldersToSearch, null, YML);
@@ -90,7 +90,7 @@ public class RepoResource extends ParsableResource implements ConfigResource {
         this.downloadedResource = multipleResourcesImpl;
         //parse will apply configuration file based on their order in the list
         //meaning ymls override configuration elements with the same name and path in config-as-code
-        return multipleResourcesImpl.loadConfig();
+        return multipleResourcesImpl.load();
 
     }
     

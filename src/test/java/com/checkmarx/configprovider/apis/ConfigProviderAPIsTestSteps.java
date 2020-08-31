@@ -33,7 +33,6 @@ public class ConfigProviderAPIsTestSteps {
     private static final String GITHUB_API_URL = "https://api.github.com";
     private static final String APPLICATION_TEST_API_YML = "application-test-api.yml";
     private static final String APPLICATION_SECRETS_TEST_API_YML = "application-test-api-secrets.yml";
-    private static final String APP_NAME = "ConfigProviderAPIsTest";
     private static final String FLOW_1 = "flow1";
     private static final String ENV_PROP_GIT_HUB_TOKEN = "envPropGitHubToken";
 
@@ -84,19 +83,12 @@ public class ConfigProviderAPIsTestSteps {
         }
     }
 
-    private ConfigObject loadPropertiesRealToken() throws ConfigurationException {
-        PropertiesResource envPropResourceImpl = new PropertiesResource();
-        
-        envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, props.getProperty(GITHUB_TOKEN));
-        ConfigObject resource = configProvider.loadResource(FLOW_1, envPropResourceImpl);
-        return resource;
-    }
-    
+
     private ConfigObject loadEnvProperties(boolean loadAll) throws ConfigurationException {
         EnvProperties envPropResourceImpl = new EnvProperties(loadAll);
         envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
-        ConfigObject resource = configProvider.loadResource(FLOW_1, envPropResourceImpl);
-        return resource;
+        MultipleResources resources = new MultipleResources(envPropResourceImpl);
+        return configProvider.initConfig(FLOW_1, resources);
     }
 
     @Given("application.yml properties overrides env variables")
@@ -105,9 +97,14 @@ public class ConfigProviderAPIsTestSteps {
             String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
             EnvProperties envPropResourceImpl = new EnvProperties(false);
             envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
-            configProvider.initBaseResource(APP_NAME, envPropResourceImpl);
+
+            MultipleResources resources = new MultipleResources(envPropResourceImpl);
+            configProvider.initBaseConfig(resources);
+
             FileResource fileResource = new FileResource(ResourceType.YML,filePath);
-            configProvider.loadResource(FLOW_1, fileResource);
+            MultipleResources baseResources = new MultipleResources(fileResource);
+            configProvider.initConfig(FLOW_1, baseResources);
+
         } catch (FileNotFoundException | ConfigurationException e) {
             Assert.fail(e.getMessage());
         }
@@ -118,28 +115,32 @@ public class ConfigProviderAPIsTestSteps {
     @Given("in github branch {string}: b.yml\\(GITHUB) over a.yml\\(GITHUB) over config-as-code\\(GITHUB) over env variables over application.yml")
     public void loadApplicationYmlAndThenGithubConfigAsCode(String branch){
         try {
-
             loadAppYml();
-            ConfigObject configWithEnvs = loadPropertiesRealToken();
-            loadGithubResources(configWithEnvs, branch);
+
+            PropertiesResource envPropResourceImpl = new PropertiesResource();
+            envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, props.getProperty(GITHUB_TOKEN));
+
+            MultipleResources resources = new MultipleResources(envPropResourceImpl);
+            ConfigObject configWithEnvs = configProvider.initConfig(FLOW_1, resources);
+
+            String configAsCodeFile = configProvider.getStringValue(FLOW_1, GITHUB_CONFIG_AS_CODE);
+            String token = extractGithubTokenFromBaseResource(FLOW_1);
+            RepoResource repoResource = getRemoteRepoLocation(branch, token);
+            repoResource.setConfigAsCodeFileName(configAsCodeFile);
+
+            configProvider.initConfig(FLOW_1, new MultipleResources(repoResource));
 
         } catch (FileNotFoundException | ConfigurationException e) {
             Assert.fail(e.getMessage());
         }
     }
     
-    private void loadGithubResources(ConfigObject configWithEnvs, String branch) throws ConfigurationException {
-        String confgiAsCodeFile = configProvider.getStringValue(FLOW_1, GITHUB_CONFIG_AS_CODE);
-        String token = extractGithubTokenFromBaseResource(FLOW_1);
-        RepoResource repoResource = getRemoteRepoLocation(branch, token);
-        repoResource.setConfigAsCodeFileName(confgiAsCodeFile);
-        configProvider.loadResources(FLOW_1, repoResource, configWithEnvs);
-    }
-
     private void loadAppYml() throws FileNotFoundException, ConfigurationException {
         String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
         FileResource fileResource = new FileResource(ResourceType.YML, filePath);
-        configProvider.initBaseResource(APP_NAME, fileResource);
+
+        MultipleResources resources = new MultipleResources(fileResource);
+        configProvider.initBaseConfig(resources);
     }
 
     @Given ("application.yml, env variables and application-secrets.yml are loaded into initial resource using MultipleResourcesImpl")
@@ -156,7 +157,7 @@ public class ConfigProviderAPIsTestSteps {
         multipleResources.add(appSecretsYmlResource);
         multipleResources.add(envPropResourceImpl);
         
-        configProvider.initBaseResource(FLOW_1, multipleResources);
+        configProvider.initBaseConfig(multipleResources);
     }
 
     @And ("the order of override will be based on the order of the files added to the MultipleResourcesImpl")
@@ -188,7 +189,7 @@ public class ConfigProviderAPIsTestSteps {
     @Then("{string} env variable will override the one from application-test-api.yml")
     public void varifyEnvVariables(String pathEnvVar){
         
-        Assert.assertTrue(configProvider.getConfigObject(FLOW_1).keySet().contains(pathEnvVar));
+        Assert.assertTrue(configProvider.getConfigObject(FLOW_1).containsKey(pathEnvVar));
 
         String path = configProvider.getConfigObject(FLOW_1).toConfig().getString(pathEnvVar);
 

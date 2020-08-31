@@ -9,6 +9,6 @@ public class Parser {
     private Parser() {}
 
     public static Config parse(ConfigResource resource) throws ConfigurationException {
-        return ((ParsableResource)resource).loadConfig();
+        return ((ParsableResource)resource).load();
     }
 }

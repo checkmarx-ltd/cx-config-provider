@@ -1,11 +1,15 @@
-package com.checkmarx.configprovider.resource;
+package com.cx.configprovider.resource;
 
-import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
-import com.checkmarx.configprovider.dto.ResourceType;
-import com.typesafe.config.*;
+import com.cx.configprovider.dto.ResourceType;
+import com.cx.configprovider.dto.interfaces.ConfigResource;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
-import javax.naming.ConfigurationException;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class PropertiesResource extends ParsableResource implements ConfigResource {
@@ -39,7 +43,7 @@ public class PropertiesResource extends ParsableResource implements ConfigResour
      * @param properties a full set of properties to be converted into a configuration tree
      */
     public void loadProperties(Properties properties){
-        properties.putAll(properties);
+        this.properties.putAll(properties);
     }
 
 
@@ -58,11 +62,11 @@ public class PropertiesResource extends ParsableResource implements ConfigResour
         Properties prop = new Properties();
         InputStream is = new FileInputStream(file);
         prop.load(is);
-        properties.putAll(properties);
+        properties.putAll(prop);
     }
     
     @Override
-    Config loadConfig() throws ConfigurationException {
+    Config load() {
         return ConfigFactory.parseProperties(properties);
     }
 

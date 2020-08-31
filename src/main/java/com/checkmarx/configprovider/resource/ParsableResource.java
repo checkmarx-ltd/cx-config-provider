@@ -16,6 +16,6 @@ public abstract class ParsableResource {
      * @return a parsed Config tree representing the ConfigResource
      * @throws ConfigurationException exception
      */
-     abstract Config loadConfig() throws ConfigurationException;
+     abstract Config load() throws ConfigurationException;
     
 }

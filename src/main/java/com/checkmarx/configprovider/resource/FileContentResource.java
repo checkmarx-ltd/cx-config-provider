@@ -52,7 +52,7 @@ public class FileContentResource extends AbstractFileResource implements ConfigR
      * can not be converted to Config object
      */
     @Override
-    public Config loadConfig() throws ConfigurationException {
+    public Config load() throws ConfigurationException {
         if(ResourceType.YML.equals(type)){
             config = yamlToConfig(content, "");
         }else if(ResourceType.JSON.equals(type)){
