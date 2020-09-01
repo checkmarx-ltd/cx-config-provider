@@ -36,12 +36,12 @@ public class RemoteRepoDownloader {
             return null;
         }
         String nameFound = filenames.stream()
-                .filter(name -> fileToFind.equals(name))
+                .filter(fileToFind::equals)
                 .findAny()
                 .orElse(null);
 
         if(nameFound!=null){
-            return downloadFiles(client, repo, folder, Arrays.asList(nameFound)).get(0);
+            return downloadFiles(client, repo, folder, Collections.singletonList(nameFound)).get(0);
         }
         return null;
     }

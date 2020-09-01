@@ -29,7 +29,7 @@ public class RepoResource extends ParsableResource implements ConfigResource {
     private static final RemoteRepoDownloader downloader = new RemoteRepoDownloader();
     
     private String configAsCodeFileName;
-    private List<String> foldersToSearch = new LinkedList<String>();
+    private List<String> foldersToSearch = new LinkedList<>();
     private MultipleResources downloadedResource;
 
     private RepoDto repoDto;

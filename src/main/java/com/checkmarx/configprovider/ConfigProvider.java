@@ -88,7 +88,7 @@ public class ConfigProvider {
 
 
     public ConfigObject getConfigObject(String uid){
-        return Optional.ofNullable(configurationMap.get(uid)).map(config -> config.root())
+        return Optional.ofNullable(configurationMap.get(uid)).map(Config::root)
         .orElse(null);
     }
 
