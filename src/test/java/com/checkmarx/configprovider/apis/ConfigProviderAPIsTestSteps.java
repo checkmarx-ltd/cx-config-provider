@@ -84,11 +84,11 @@ public class ConfigProviderAPIsTestSteps {
     }
 
 
-    private ConfigObject loadEnvProperties(boolean loadAll) throws ConfigurationException {
+    private void loadEnvProperties(boolean loadAll) throws ConfigurationException {
         EnvProperties envPropResourceImpl = new EnvProperties(loadAll);
         envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
         MultipleResources resources = new MultipleResources(envPropResourceImpl);
-        return configProvider.initConfig(FLOW_1, resources);
+        configProvider.initConfig(FLOW_1, resources);
     }
 
     @Given("application.yml properties overrides env variables")
@@ -121,7 +121,7 @@ public class ConfigProviderAPIsTestSteps {
             envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, props.getProperty(GITHUB_TOKEN));
 
             MultipleResources resources = new MultipleResources(envPropResourceImpl);
-            ConfigObject configWithEnvs = configProvider.initConfig(FLOW_1, resources);
+            configProvider.initConfig(FLOW_1, resources);
 
             String configAsCodeFile = configProvider.getStringValue(FLOW_1, GITHUB_CONFIG_AS_CODE);
             String token = extractGithubTokenFromBaseResource(FLOW_1);

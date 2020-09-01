@@ -3,12 +3,10 @@ package com.cx.configprovider;
 import com.cx.configprovider.resource.MultipleResources;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
-import com.typesafe.config.ConfigValueType;
 import lombok.Getter;
 
 import javax.naming.ConfigurationException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,13 +34,11 @@ public class ConfigProvider {
      * @param uid       a unique identifier of a ConfigObject to be created
      * @param resources contains a representation of one or several
      *                  configuration sources.
-     * @return ConfigObject representing a configuration tree
      */
-    public ConfigObject initConfig(String uid, MultipleResources resources) throws ConfigurationException {
+    public void initConfig(String uid, MultipleResources resources) throws ConfigurationException {
         Config contextSpecificConfig = resources.load();
         Config mergedConfig = contextSpecificConfig.withFallback(baseConfig);
         store(uid, mergedConfig);
-        return mergedConfig.root();
     }
 
     private void store(String uid, Config config) {
@@ -56,37 +52,6 @@ public class ConfigProvider {
 
     public String getStringValue(String uid, String path) {
         return getConfigObject(uid).toConfig().getString(path);
-    }
-
-
-    public Map<String, Object> getMapFromConfig(String uid, String pathToMap) {
-        Object result = getConfigObject(uid).toConfig().getValue(pathToMap).unwrapped();
-
-        if (result instanceof Map) {
-            return (Map) result;
-        } else {
-            throw new TypeNotPresentException("Map", null);
-        }
-
-    }
-
-    public List<String> getStringListFromConfig(String uid, String pathToList) {
-        ConfigValueType type = getConfigObject(uid).toConfig().getValue(pathToList).valueType();
-        if (type.equals(ConfigValueType.LIST)) {
-            return getConfigObject(uid).toConfig().getStringList(pathToList);
-        } else {
-            throw new TypeNotPresentException("List", null);
-        }
-    }
-
-
-    public ConfigObject getConfigObjectSection(String uid, String section) {
-        return getConfigObject(uid).atKey(section).root();
-    }
-
-
-    public ConfigObject getBaseConfig() {
-        return baseConfig.root();
     }
 
     /**

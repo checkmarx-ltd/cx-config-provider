@@ -14,7 +14,6 @@ public abstract class ParsableResource {
      * as places each element in the tree based on its 
      * path
      * @return a parsed Config tree representing the ConfigResource
-     * @throws ConfigurationException exception
      */
      abstract Config load() throws ConfigurationException;
     
