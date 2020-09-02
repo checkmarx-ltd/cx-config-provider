@@ -1,9 +1,9 @@
-package com.cx.configprovider.resource;
+package com.checkmarx.configprovider.resource;
 
-import com.cx.configprovider.RemoteRepoDownloader;
-import com.cx.configprovider.dto.RepoDto;
-import com.cx.configprovider.dto.SourceProviderType;
-import com.cx.configprovider.dto.interfaces.ConfigResource;
+import com.checkmarx.configprovider.RemoteRepoDownloader;
+import com.checkmarx.configprovider.dto.RepoDto;
+import com.checkmarx.configprovider.dto.SourceProviderType;
+import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
 import lombok.Getter;
 

@@ -1,6 +1,6 @@
-package com.cx.configprovider;
+package com.checkmarx.configprovider;
 
-import com.cx.configprovider.resource.MultipleResources;
+import com.checkmarx.configprovider.resource.MultipleResources;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 import lombok.Getter;

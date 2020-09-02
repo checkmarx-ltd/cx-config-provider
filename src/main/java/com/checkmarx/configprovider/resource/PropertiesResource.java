@@ -1,7 +1,7 @@
-package com.cx.configprovider.resource;
+package com.checkmarx.configprovider.resource;
 
-import com.cx.configprovider.dto.ResourceType;
-import com.cx.configprovider.dto.interfaces.ConfigResource;
+import com.checkmarx.configprovider.dto.ResourceType;
+import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
