@@ -17,14 +17,14 @@ Feature: As a client using ConfigProvider, I want my configuration to be loaded 
         And using ConfigProvider to load config-as-code
         Then the resulting config will have the "<property>" set to the "<resulting>" value
         Examples:
-            | property                | default               | YAML value           | resulting            |
-            | cx-flow.thresholds.high | 3                     | 5                    | 5                    |
-            | cx-flow.thresholds.low  | 10                    | <missing>            | 10                   |
-            | gitlab.url              | "https://example.com" | "https://gitlab.com" | "https://gitlab.com" |
-            | gitlab.preset           | "strict"              | <null>               | "strict"             |
-            | log-level               | "info"                | "debug"              | "debug"              |
-            | sca.username            | <null>                | "myuser1"            | "myuser1"            |
-            | sca.active              | <missing>             | true                 | true                 |
+            | property                | default             | YAML value         | resulting          |
+            | cx-flow.thresholds.high | 3                   | 5                  | 5                  |
+            | cx-flow.thresholds.low  | 10                  | <missing>          | 10                 |
+            | gitlab.url              | https://example.com | https://gitlab.com | https://gitlab.com |
+            | gitlab.preset           | strict              | <null>             | strict             |
+            | log-level               | info                | debug              | debug              |
+            | sca.username            | <null>              | myuser1            | myuser1            |
+            | sca.active              | <missing>           | true               | true               |
 
 
     Scenario Outline: overriding configuration from config-as-code YAML file with environment variables
