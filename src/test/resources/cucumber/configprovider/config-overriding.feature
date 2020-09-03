@@ -1,31 +1,30 @@
-@Skip
 Feature: As a client using ConfigProvider, I want my configuration to be loaded from several known sources
     using a fixed override order
 
     Background: Default configuration contains all necessary info for accessing the target GitHub repository: URL, token etc.
 
-    Override order (next overrides previous):
-    1. Default configuration (local YAML file)
+    Override order (next item overrides the previous one):
+    1. Default configuration (local config file)
     2. Config-as-code YAML from a remote repository
     3. Environment variables
 
 
     Scenario Outline: overriding default configuration with config-as-code YAML file
     Check that (2) overrides (1)
-        Given default configuration contains "<property>" set to <default> value
-        And config-as-code YAML file in the GitHub repository contains "<property>" with the <remote YAML> value
+        Given default configuration contains "<property>" set to "<default>" value
+        And config-as-code YAML file in the GitHub repository contains "<property>" with the "<YAML value>" value
         When initializing ConfigProvider with the default configuration
         And using ConfigProvider to load config-as-code
-        Then the resulting config will have the "<property>" set to the <resulting> value
+        Then the resulting config will have the "<property>" set to the "<resulting>" value
         Examples:
-            | property                | default               | remote YAML          | resulting            |
+            | property                | default               | YAML value           | resulting            |
             | cx-flow.thresholds.high | 3                     | 5                    | 5                    |
+            | cx-flow.thresholds.low  | 10                    | <missing>            | 10                   |
             | gitlab.url              | "https://example.com" | "https://gitlab.com" | "https://gitlab.com" |
+            | gitlab.preset           | "strict"              | <null>               | "strict"             |
             | log-level               | "info"                | "debug"              | "debug"              |
-            | log-level               | <null>                | "debug"              | "debug"              |
+            | sca.username            | <null>                | "myuser1"            | "myuser1"            |
             | sca.active              | <missing>             | true                 | true                 |
-            | log-level               | "info"                | <missing>            | "info"               |
-            | log-level               | "info"                | <null>               | "info"               |
 
 
     Scenario Outline: overriding configuration from config-as-code YAML file with environment variables
@@ -35,12 +34,11 @@ Feature: As a client using ConfigProvider, I want my configuration to be loaded 
         And the "<env variable name>" environment variable has the "<env variable value>" value
         When initializing ConfigProvider with the default configuration
         And using ConfigProvider to load config-as-code
-        Then the resulting config will have the "<YAML property>" set to the <resulting> value
+        Then the resulting config will have the "<YAML property>" set to the "<resulting>" value
         Examples:
             | YAML property           | YAML value           | env variable name       | env variable value    | resulting             |
             | cx-flow.thresholds.high | 5                    | CX_FLOW_THRESHOLDS_HIGH | 12                    | 12                    |
+            | cx-flow.thresholds.low  | 16                   | CX_FLOW_THRESHOLDS_LOW  | <missing>             | 16                    |
             | gitlab.url              | "https://gitlab.com" | GITLAB_URL              | "https://example.com" | "https://example.com" |
-            | log-level               | "debug"              | LOG_LEVEL               | "warning"             | "warning"             |
-            | sca.active              | true                 | SCA_ACTIVE              | <missing>             | true                  |
-            | log-level               | <missing>            | LOG_LEVEL               | "info"                | "info"                |
             | log-level               | <null>               | LOG_LEVEL               | "info"                | "info"                |
+            | sca.username            | <missing>            | SCA_USERNAME            | "myuser2"             | "myuser2"             |
