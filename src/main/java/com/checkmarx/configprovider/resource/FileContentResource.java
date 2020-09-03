@@ -1,7 +1,7 @@
 package com.checkmarx.configprovider.resource;
 
-import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
 import com.checkmarx.configprovider.dto.ResourceType;
+import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
 import lombok.Getter;
 
@@ -16,10 +16,6 @@ public class FileContentResource extends AbstractFileResource implements ConfigR
     private String content;
     private String  name;
 
-    private FileContentResource(){
-        super();
-    }
-    
     public FileContentResource(ResourceType type, String fileContent, String name)  {
         this.type = type;
         this.content = fileContent;

@@ -4,6 +4,7 @@ import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
 
 import javax.naming.ConfigurationException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,8 +21,8 @@ public class MultipleResources implements ConfigResource {
     public MultipleResources(){
     }
 
-    public MultipleResources(ParsableResource single) {
-        add(single);
+    public MultipleResources(ParsableResource... resources) {
+        add(Arrays.asList(resources));
     }
 
     public MultipleResources(List<ParsableResource> configResources){

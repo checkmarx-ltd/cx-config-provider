@@ -52,6 +52,10 @@ public class RepoResource extends ParsableResource implements ConfigResource {
 
     }
 
+    public RepoResource(RepoDto remoteRepoInfo) {
+        repoDto = remoteRepoInfo;
+    }
+
    
     public void setConfigAsCodeFileName(String configAsCodeFileName) {
         this.configAsCodeFileName = configAsCodeFileName;

@@ -1,23 +1,19 @@
 package com.checkmarx.configprovider.downloader;
 
 import com.checkmarx.configprovider.dto.SourceProviderType;
-
-
 import com.checkmarx.configprovider.exceptions.ConfigProviderException;
 import com.checkmarx.configprovider.resource.Parser;
 import com.checkmarx.configprovider.resource.RepoResource;
 import com.checkmarx.configprovider.utility.PropertyLoader;
-
 import com.typesafe.config.Config;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-
 import org.junit.Assert;
 
 import javax.naming.ConfigurationException;
-
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -53,18 +49,17 @@ public class RemoteRepoDownloaderSteps {
             exception = e;
         }
     }
+
     @And("the the returned configuration object will be {string}")
     public void checkOutput(String expected) {
-        if(exception!=null){
-            return;
-        }
-        else if(config == null){
-            fail("config not populated");
-        }
-        else if(expected.equals("empty")){
-            assertEmptyContent();
-        }else{
-            assertNonEmptyContent();
+        if (exception == null) {
+            if (config == null) {
+                fail("config not populated");
+            } else if (expected.equals("empty")) {
+                assertEmptyContent();
+            } else {
+                assertNonEmptyContent();
+            }
         }
     }
     
@@ -82,19 +77,17 @@ public class RemoteRepoDownloaderSteps {
     }
 
     private static void assertNonEmptyContent() {
-  
-        assertTrue("Config-as-code file content is empty.", !config.root().render().isEmpty());
-        
+        assertFalse("Config-as-code file content is empty.", config.root().render().isEmpty());
     }
 
     private Config getConfigFromPath(String path) throws ConfigurationException {
 
         RepoResource repoResource = getRemoteRepo();
-        repoResource.setFoldersToSearch(Arrays.asList(path));
+        repoResource.setFoldersToSearch(Collections.singletonList(path));
         
         config = Parser.parse(repoResource);
         assertNotNull("Config-as-code object must always be non-null.", config);
-        assertTrue("File content must always be non-null.", !config.isEmpty());
+        assertFalse("File content must always be non-null.", config.isEmpty());
         return config;
     }
 
@@ -105,5 +98,4 @@ public class RemoteRepoDownloaderSteps {
             throw new UnsupportedOperationException();
         }
     }
-
 }
