@@ -8,6 +8,7 @@ import com.typesafe.config.Config;
 import lombok.Getter;
 
 import javax.naming.ConfigurationException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class RepoResource extends ParsableResource implements ConfigResource {
     private static final String YML = "yml";
 
     
-    private static final RemoteRepoDownloader downloader = new RemoteRepoDownloader();
+    private RemoteRepoDownloader downloader;
     
     private String configAsCodeFileName;
     private List<String> foldersToSearch = new LinkedList<>();
@@ -52,11 +53,12 @@ public class RepoResource extends ParsableResource implements ConfigResource {
 
     }
 
-    public RepoResource(RepoDto remoteRepoInfo) {
-        repoDto = remoteRepoInfo;
+    public RepoResource(RepoDto repoInfo, RemoteRepoDownloader downloader) {
+        this.downloader = downloader;
+        this.repoDto = repoInfo;
     }
 
-   
+
     public void setConfigAsCodeFileName(String configAsCodeFileName) {
         this.configAsCodeFileName = configAsCodeFileName;
     }
@@ -77,19 +79,24 @@ public class RepoResource extends ParsableResource implements ConfigResource {
      * @throws ConfigurationException exception
      */
     @Override
-    Config load() throws ConfigurationException {
-        
+    public Config load() throws ConfigurationException {
+
+        List<ParsableResource> configsFromRepo = new ArrayList<>();
+
         //first load config-as-code from the root of the repo (default) or other folder set 
-        ParsableResource configAsCodeResource = downloader.downloadRepoFiles(getRepoDto(), Collections.singletonList(REPO_ROOT), configAsCodeFileName, null).get(0);
+        List<ParsableResource> configAsCode = downloader.downloadRepoFiles(getRepoDto(), Collections.singletonList(REPO_ROOT), configAsCodeFileName, null);
+        if (!configAsCode.isEmpty()) {
+            configsFromRepo.add(configAsCode.get(0));
+        }
 
         //then load config Ymls from .checkmarx folder (default) and other from folders set 
-        List<ParsableResource> listRawConfigYmls = downloader.downloadRepoFiles(getRepoDto(), foldersToSearch, null, YML);
+        List<ParsableResource> yamlConfigFiles = downloader.downloadRepoFiles(getRepoDto(), foldersToSearch, null, YML);
 
         //add config-as-code to be the first one in the list - so that hte ymls be applied over it
         //ymls override configuration elements with the same name and path in config-as-code
-        listRawConfigYmls.add(0,configAsCodeResource);
+        configsFromRepo.addAll(yamlConfigFiles);
 
-        MultipleResources multipleResourcesImpl = new MultipleResources(listRawConfigYmls);
+        MultipleResources multipleResourcesImpl = new MultipleResources(configsFromRepo);
 
         this.downloadedResource = multipleResourcesImpl;
         //parse will apply configuration file based on their order in the list

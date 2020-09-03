@@ -51,7 +51,8 @@ public class ConfigProvider {
     }
 
     public String getStringValue(String uid, String path) {
-        return getConfigObject(uid).toConfig().getString(path);
+        Config config = getConfigObject(uid).toConfig();
+        return config.hasPath(path) ? config.getString(path) : null;
     }
 
     /**
