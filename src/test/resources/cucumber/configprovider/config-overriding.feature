@@ -27,6 +27,7 @@ Feature: As a client using ConfigProvider, I want my configuration to be loaded 
             | sca.active              | <missing>           | true               | true               |
 
 
+    @Skip
     Scenario Outline: overriding configuration from config-as-code YAML file with environment variables
     Check that (3) overrides (2). Also verify the mapping from YAML properties to env variable names.
         Given default configuration doesn't contain properties defined in the examples

@@ -2,7 +2,6 @@ package com.checkmarx.configprovider.downloader;
 
 import com.checkmarx.configprovider.dto.SourceProviderType;
 import com.checkmarx.configprovider.exceptions.ConfigProviderException;
-import com.checkmarx.configprovider.resource.Parser;
 import com.checkmarx.configprovider.resource.RepoResource;
 import com.checkmarx.configprovider.utility.PropertyLoader;
 import com.typesafe.config.Config;
@@ -12,7 +11,6 @@ import io.cucumber.java.en.When;
 import org.junit.Assert;
 
 import javax.naming.ConfigurationException;
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
@@ -80,12 +78,12 @@ public class RemoteRepoDownloaderSteps {
         assertFalse("Config-as-code file content is empty.", config.root().render().isEmpty());
     }
 
-    private Config getConfigFromPath(String path) throws ConfigurationException {
+    private Config getConfigFromPath(String path) {
 
         RepoResource repoResource = getRemoteRepo();
         repoResource.setFoldersToSearch(Collections.singletonList(path));
         
-        config = Parser.parse(repoResource);
+        config = repoResource.load();
         assertNotNull("Config-as-code object must always be non-null.", config);
         assertFalse("File content must always be non-null.", config.isEmpty());
         return config;

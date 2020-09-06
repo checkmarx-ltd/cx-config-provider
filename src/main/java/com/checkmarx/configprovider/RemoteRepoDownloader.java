@@ -4,17 +4,18 @@ import com.checkmarx.configprovider.dto.RepoDto;
 import com.checkmarx.configprovider.dto.SourceProviderType;
 import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
 import com.checkmarx.configprovider.exceptions.ConfigProviderException;
+import com.checkmarx.configprovider.interfaces.SourceControlClient;
 import com.checkmarx.configprovider.resource.FileContentResource;
 import com.checkmarx.configprovider.resource.ParsableResource;
-
-import com.checkmarx.configprovider.interfaces.SourceControlClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.naming.ConfigurationException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -66,7 +67,7 @@ public class RemoteRepoDownloader {
     }
     
 
-    public List<ParsableResource> downloadRepoFiles(RepoDto repo, List<String> folders, String nameToFind, String suffixToFind) throws ConfigurationException {
+    public List<ParsableResource> downloadRepoFiles(RepoDto repo, List<String> folders, String nameToFind, String suffixToFind) {
         log.info("Searching for a config-as-code file in a remote repo");
         validate(repo);
 
@@ -81,7 +82,7 @@ public class RemoteRepoDownloader {
             ParsableResource specificFile = loadFileByName(client, repo, folder, nameToFind, filenames);
 
             if (specificFile != null) {
-                resources = Arrays.asList(specificFile);
+                resources = Collections.singletonList(specificFile);
             } else {
                 resources = loadFileBySuffix(client, repo, folder, suffixToFind, filenames);
             }
@@ -142,7 +143,7 @@ public class RemoteRepoDownloader {
             filenames.stream().sorted().forEachOrdered(filename ->{
                 String fileContent = client.downloadFileContent(folder, filename, repo);
                 log.info("Config-as-code was found with content length: {}", fileContent.length());
-                FileContentResource configResourceImpl = null;
+                FileContentResource configResourceImpl;
 
                 configResourceImpl = new FileContentResource(fileContent, filename);
                

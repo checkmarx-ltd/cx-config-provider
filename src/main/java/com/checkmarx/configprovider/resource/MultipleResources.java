@@ -4,7 +4,6 @@ import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-import javax.naming.ConfigurationException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,7 +55,7 @@ public class MultipleResources implements ConfigResource {
      *
      * @return Config tree
      */
-    public Config load() throws ConfigurationException {
+    public Config load() {
         Config configFull = ConfigFactory.empty();
         for (ParsableResource configSource : configSourceList) {
             Config configCurrent = configSource.load();

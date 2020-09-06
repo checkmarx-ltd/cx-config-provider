@@ -55,7 +55,7 @@ public class ConfigOverridingSteps {
     }
 
     @When("initializing ConfigProvider with the default configuration")
-    public void initializingConfigProvider() throws ConfigurationException {
+    public void initializingConfigProvider() {
         MultipleResources resources = new MultipleResources(baseResources);
         configProvider.initBaseConfig(resources);
     }
@@ -81,7 +81,7 @@ public class ConfigOverridingSteps {
     }
 
     @And("using ConfigProvider to load config-as-code")
-    public void usingConfigProviderToLoadConfigAsCode() throws ConfigurationException {
+    public void usingConfigProviderToLoadConfigAsCode() {
         FileContentResource yamlContent = new FileContentResource(ResourceType.YML, configAsCodeContents, "test.yaml");
 
         RemoteRepoDownloader downloader = mock(RemoteRepoDownloader.class);

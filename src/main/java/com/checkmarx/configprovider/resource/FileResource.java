@@ -2,10 +2,10 @@ package com.checkmarx.configprovider.resource;
 
 import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
 import com.checkmarx.configprovider.dto.ResourceType;
+import com.checkmarx.configprovider.exceptions.ConfigProviderException;
 import com.typesafe.config.Config;
 import lombok.Getter;
 
-import javax.naming.ConfigurationException;
 import java.io.File;
 
 /**
@@ -18,10 +18,10 @@ public class FileResource extends AbstractFileResource implements ConfigResource
     private File file;
     
     
-    public FileResource(ResourceType type, String filepath) throws ConfigurationException {
+    public FileResource(ResourceType type, String filepath) {
         file = new File(filepath);
         if(!file.exists()){
-            throw new ConfigurationException("File not found: " + filepath);
+            throw new ConfigProviderException("File not found: " + filepath);
         }
         this.type = type;
         if(!type.equals(ResourceType.JSON) && !type.equals(ResourceType.YML)) {
@@ -31,7 +31,7 @@ public class FileResource extends AbstractFileResource implements ConfigResource
     
   
     @Override
-    Config load() throws ConfigurationException {
+    Config load() {
         if(ResourceType.YML.equals(type)){
             config = yamlToConfig(file);
         }else if(ResourceType.JSON.equals(type)){

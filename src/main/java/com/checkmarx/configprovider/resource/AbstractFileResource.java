@@ -1,6 +1,7 @@
 package com.checkmarx.configprovider.resource;
 
 import com.checkmarx.configprovider.dto.ResourceType;
+import com.checkmarx.configprovider.exceptions.ConfigProviderException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -9,7 +10,6 @@ import com.typesafe.config.ConfigFactory;
 import lombok.Getter;
 import org.apache.commons.io.IOUtils;
 
-import javax.naming.ConfigurationException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,7 +34,7 @@ public abstract class AbstractFileResource extends ParsableResource {
         return ConfigFactory.parseString(fileContent);
     }
 
-    Config yamlToConfig(String yamlContent, String path) throws ConfigurationException {
+    Config yamlToConfig(String yamlContent, String path) {
         try{
 
             ObjectMapper yamlReader = new ObjectMapper(new YAMLFactory());
@@ -45,7 +45,7 @@ public abstract class AbstractFileResource extends ParsableResource {
             return ConfigFactory.parseString(jsonAsStr);
 
         } catch (JsonProcessingException e) {
-            throw new ConfigurationException("Unable to parse YML configuration file " + path);
+            throw new ConfigProviderException("Unable to parse YML configuration file " + path);
         }
     }
 
@@ -63,7 +63,7 @@ public abstract class AbstractFileResource extends ParsableResource {
         throw new UnsupportedOperationException();
     }
 
-    Config yamlToConfig(File file) throws ConfigurationException {
+    Config yamlToConfig(File file) {
 
         try {
             String yamlContent = IOUtils.toString(new FileInputStream(file.getPath()), StandardCharsets.UTF_8);
@@ -71,7 +71,7 @@ public abstract class AbstractFileResource extends ParsableResource {
             return yamlToConfig(yamlContent, file.getPath()) ;
 
         } catch (IOException e) {
-            throw new ConfigurationException("Unable to read URL " + file.getPath());
+            throw new ConfigProviderException("Unable to read URL " + file.getPath());
 
         }
 

@@ -2,6 +2,7 @@ package com.checkmarx.configprovider.apis;
 
 import com.checkmarx.configprovider.ConfigProvider;
 import com.checkmarx.configprovider.dto.SourceProviderType;
+import com.checkmarx.configprovider.exceptions.ConfigProviderException;
 import com.checkmarx.configprovider.resource.EnvProperties;
 import com.checkmarx.configprovider.resource.FileResource;
 import com.checkmarx.configprovider.resource.MultipleResources;
@@ -9,7 +10,6 @@ import com.checkmarx.configprovider.resource.PropertiesResource;
 import com.checkmarx.configprovider.resource.RepoResource;
 import com.checkmarx.configprovider.dto.ResourceType;
 import com.checkmarx.configprovider.utility.PropertyLoader;
-import com.typesafe.config.ConfigObject;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -62,29 +62,20 @@ public class ConfigProviderAPIsTestSteps {
     }
     
     @Given("env variable overrides application.yml property")
-    public void loadAppYmlAndThenEnvVars(){
-        try {
-            loadAppYml();
-            loadEnvProperties(false);
-            
-        } catch (FileNotFoundException | ConfigurationException e) {
-            Assert.fail(e.getMessage());
-        }
+    public void loadAppYmlAndThenEnvVars() throws FileNotFoundException {
+        loadAppYml();
+        loadEnvProperties(false);
     }
     
     @Given("Config provider loads all environment variables and then data from application.yml")
-    public void loadAppYmlAndThenAllEnvVars(){
-        try {
-            loadAppYml();
-            loadEnvProperties(true);
-            
-        } catch (FileNotFoundException | ConfigurationException e) {
-            Assert.fail(e.getMessage());
-        }
+    public void loadAppYmlAndThenAllEnvVars() throws FileNotFoundException {
+        loadAppYml();
+        loadEnvProperties(true);
+
     }
 
 
-    private void loadEnvProperties(boolean loadAll) throws ConfigurationException {
+    private void loadEnvProperties(boolean loadAll) {
         EnvProperties envPropResourceImpl = new EnvProperties(loadAll);
         envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
         MultipleResources resources = new MultipleResources(envPropResourceImpl);
@@ -92,29 +83,23 @@ public class ConfigProviderAPIsTestSteps {
     }
 
     @Given("application.yml properties overrides env variables")
-    public void loadAppEnvVarsAndThenApplicationYml(){
-        try {
-            String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
-            EnvProperties envPropResourceImpl = new EnvProperties(false);
-            envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
+    public void loadAppEnvVarsAndThenApplicationYml() throws FileNotFoundException {
+        String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
+        EnvProperties envPropResourceImpl = new EnvProperties(false);
+        envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
 
-            MultipleResources resources = new MultipleResources(envPropResourceImpl);
-            configProvider.initBaseConfig(resources);
+        MultipleResources resources = new MultipleResources(envPropResourceImpl);
+        configProvider.initBaseConfig(resources);
 
-            FileResource fileResource = new FileResource(ResourceType.YML,filePath);
-            MultipleResources baseResources = new MultipleResources(fileResource);
-            configProvider.initConfig(FLOW_1, baseResources);
-
-        } catch (FileNotFoundException | ConfigurationException e) {
-            Assert.fail(e.getMessage());
-        }
+        FileResource fileResource = new FileResource(ResourceType.YML, filePath);
+        MultipleResources baseResources = new MultipleResources(fileResource);
+        configProvider.initConfig(FLOW_1, baseResources);
     }
 
     @Given("github config-as-code\\(GITHUB) over env variables over application.yml in branch {string}")
     @Given("config-as-code.yml over config-as-code\\(GITHUB) over env variables over application.yml in github branch {string}")
     @Given("in github branch {string}: b.yml\\(GITHUB) over a.yml\\(GITHUB) over config-as-code\\(GITHUB) over env variables over application.yml")
-    public void loadApplicationYmlAndThenGithubConfigAsCode(String branch){
-        try {
+    public void loadApplicationYmlAndThenGithubConfigAsCode(String branch) throws FileNotFoundException {
             loadAppYml();
 
             PropertiesResource envPropResourceImpl = new PropertiesResource();
@@ -129,13 +114,9 @@ public class ConfigProviderAPIsTestSteps {
             repoResource.setConfigAsCodeFileName(configAsCodeFile);
 
             configProvider.initConfig(FLOW_1, new MultipleResources(repoResource));
-
-        } catch (FileNotFoundException | ConfigurationException e) {
-            Assert.fail(e.getMessage());
-        }
     }
     
-    private void loadAppYml() throws FileNotFoundException, ConfigurationException {
+    private void loadAppYml() throws FileNotFoundException {
         String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
         FileResource fileResource = new FileResource(ResourceType.YML, filePath);
 
@@ -144,7 +125,7 @@ public class ConfigProviderAPIsTestSteps {
     }
 
     @Given ("application.yml, env variables and application-secrets.yml are loaded into initial resource using MultipleResourcesImpl")
-    public void testBaseResourceUsingMultipleResources() throws FileNotFoundException, ConfigurationException{
+    public void testBaseResourceUsingMultipleResources() throws FileNotFoundException {
         String appYmlPath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
         String appSecretsYmlPath = props.getFileUrlInClassloader(APPLICATION_SECRETS_TEST_API_YML);
         FileResource appYmlResource = new FileResource(ResourceType.YML, appYmlPath);

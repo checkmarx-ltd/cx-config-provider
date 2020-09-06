@@ -5,7 +5,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 import lombok.Getter;
 
-import javax.naming.ConfigurationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +20,7 @@ public class ConfigProvider {
     private ConfigProvider() {
     }
 
-    public void initBaseConfig(MultipleResources resources) throws ConfigurationException {
+    public void initBaseConfig(MultipleResources resources) {
         baseConfig = resources.load();
     }
 
@@ -35,7 +34,7 @@ public class ConfigProvider {
      * @param resources contains a representation of one or several
      *                  configuration sources.
      */
-    public void initConfig(String uid, MultipleResources resources) throws ConfigurationException {
+    public void initConfig(String uid, MultipleResources resources) {
         Config contextSpecificConfig = resources.load();
         Config mergedConfig = contextSpecificConfig.withFallback(baseConfig);
         store(uid, mergedConfig);

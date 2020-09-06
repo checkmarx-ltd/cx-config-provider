@@ -2,8 +2,6 @@ package com.checkmarx.configprovider.resource;
 
 import com.typesafe.config.Config;
 
-import javax.naming.ConfigurationException;
-
 /**
  * This is an internal resource to be used within the configuration provider package
  */
@@ -15,6 +13,5 @@ public abstract class ParsableResource {
      * path
      * @return a parsed Config tree representing the ConfigResource
      */
-     abstract Config load() throws ConfigurationException;
-    
+     abstract Config load();
 }

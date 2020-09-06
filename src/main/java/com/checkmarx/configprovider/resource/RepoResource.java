@@ -7,7 +7,6 @@ import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
 import lombok.Getter;
 
-import javax.naming.ConfigurationException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -76,10 +75,9 @@ public class RepoResource extends ParsableResource implements ConfigResource {
      * 2. yml files in .checkmarx folder in alphabetical order  
      * yml files elements will override the elements with the same name and path in config-as-code 
      * @return Config object representing ap arsed configuration consisting of all resources
-     * @throws ConfigurationException exception
      */
     @Override
-    public Config load() throws ConfigurationException {
+    public Config load() {
 
         List<ParsableResource> configsFromRepo = new ArrayList<>();
 
