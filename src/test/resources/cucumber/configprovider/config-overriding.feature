@@ -21,7 +21,7 @@ Feature: As a client using ConfigProvider, I want my configuration to be loaded 
             | cx-flow.thresholds.high | 3                   | 5                  | 5                  |
             | cx-flow.thresholds.low  | 10                  | <missing>          | 10                 |
             | gitlab.url              | https://example.com | https://gitlab.com | https://gitlab.com |
-            | gitlab.preset           | strict              | <null>             | strict             |
+            | gitlab.preset           | strict              | <null>             | <null>             |
             | log-level               | info                | debug              | debug              |
             | sca.username            | <null>              | myuser1            | myuser1            |
             | sca.active              | <missing>           | true               | true               |

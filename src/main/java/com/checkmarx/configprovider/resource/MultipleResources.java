@@ -2,6 +2,7 @@ package com.checkmarx.configprovider.resource;
 
 import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
 import javax.naming.ConfigurationException;
 import java.util.Arrays;
@@ -56,15 +57,10 @@ public class MultipleResources implements ConfigResource {
      * @return Config tree
      */
     public Config load() throws ConfigurationException {
-        Config configFull = null;
+        Config configFull = ConfigFactory.empty();
         for (ParsableResource configSource : configSourceList) {
-            if (configFull == null) {
-                configFull = configSource.load();
-            } else {
-                Config configCurrent = configSource.load();
-                configFull = configCurrent.withFallback(configFull);
-            }
-
+            Config configCurrent = configSource.load();
+            configFull = configCurrent.withFallback(configFull);
         }
         return configFull;
     }

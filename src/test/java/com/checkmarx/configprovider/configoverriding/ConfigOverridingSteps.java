@@ -30,24 +30,12 @@ import static org.mockito.Mockito.*;
 public class ConfigOverridingSteps {
     private static final PropertyLoader props = new PropertyLoader();
     private static final String TEST_UID = "ba92nakJrq";
-    public static final String MISSING_PROPERTY_INDICATOR = "<missing>";
-    public static final String NULL_VALUE_INDICATOR = "<null>";
+    private static final String MISSING_PROPERTY_INDICATOR = "<missing>";
+    private static final String NULL_VALUE_INDICATOR = "<null>";
 
     private final ConfigProvider configProvider = ConfigProvider.getInstance();
     private final List<ParsableResource> baseResources = new ArrayList<>();
     private String configAsCodeContents;
-
-    @Before
-    public void init() throws ConfigurationException, FileNotFoundException {
-        includeBaseYaml("override-test.yaml");
-        includeBaseYaml("override-test-secrets.yaml");
-
-    }
-
-    private void includeBaseYaml(String filename) throws FileNotFoundException, ConfigurationException {
-        String baseConfigPath = props.getFileUrlInClassloader(filename);
-        baseResources.add(new FileResource(ResourceType.YML, baseConfigPath));
-    }
 
     @Given("default configuration contains {string} set to {string} value")
     public void defaultConfigurationContains(String propName, String propValue) {
@@ -58,7 +46,7 @@ public class ConfigOverridingSteps {
                 propValue = StringUtils.wrapIfMissing(propValue, '"');
             }
             // A superset of JSON is actually used that allows dot notation.
-            // It also allows null values, unlike the properties format.
+            // It also allows null values, unlike the Java built-in properties format.
             FileContentResource configForStep = new FileContentResource(ResourceType.JSON,
                     String.format("%s: %s", propName, propValue),
                     "test.json");
@@ -82,13 +70,9 @@ public class ConfigOverridingSteps {
 
             final String INDENT = "  ";
             String[] parts = StringUtils.split(propName, '.');
-//        parts[parts.length - 1] += String.format(": %s", propValue);
             for (int i = 0; i < parts.length; i++) {
                 boolean isLast = i == parts.length - 1;
                 yamlBuilder.append(String.format("%s%s: %s%n", StringUtils.repeat(INDENT, i), parts[i], isLast ? propValue : ""));
-//            yamlBuilder.append(StringUtils.repeat(INDENT, i));
-//            yamlBuilder.append(parts[i]);
-//            yamlBuilder.append(System.lineSeparator());
             }
             configAsCodeContents = yamlBuilder.append(System.lineSeparator()).toString();
         } else {
@@ -115,6 +99,10 @@ public class ConfigOverridingSteps {
 
     @Then("the resulting config will have the {string} set to the {string} value")
     public void theResultingConfigWillHave(String propPath, String expectedPropValue) {
+        if (expectedPropValue.equals(NULL_VALUE_INDICATOR)) {
+            expectedPropValue = null;
+        }
+
         String actualPropValue = configProvider.getStringValue(TEST_UID, propPath);
 
         String message = String.format("Unexpected resulting value for the %s property", propPath);
