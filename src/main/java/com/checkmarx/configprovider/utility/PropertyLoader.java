@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 @Slf4j
@@ -23,8 +24,7 @@ public class PropertyLoader {
     public void loadProperties() {
         Properties result = getProps(MAIN_PROPERTIES_FILE);
 
-        Properties overridingProps = getProps(OVERRIDE_FILE);
-        result.putAll(overridingProps);
+        Optional.ofNullable(getProps(OVERRIDE_FILE)).ifPresent(result::putAll);
 
         props = result;
     }
@@ -89,7 +89,7 @@ public class PropertyLoader {
     }
 
     private String toConfigPath(String variableName) {
-        return variableName.toLowerCase().replace("_", "\\.").trim();
+        return variableName.toLowerCase().replace("_", ".").trim();
     }
 
     private String toEnvVariable(String variableName) {

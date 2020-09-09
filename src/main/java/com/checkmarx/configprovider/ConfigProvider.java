@@ -130,7 +130,7 @@ public class ConfigProvider {
 
   
     public ConfigObject getBaseConfig() {
-        return configurationMap.get(appName).root();
+        return configurationMap.get(appName).resolve().root();
     }
 
     /**

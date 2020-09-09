@@ -41,7 +41,7 @@ public abstract class AbstractFileResource extends ParsableResource {
 
             Object obj = yamlReader.readValue(yamlContent, Object.class);
             ObjectMapper jsonWriter = new ObjectMapper();
-            String jsonAsStr = jsonWriter.writeValueAsString(obj);
+            String jsonAsStr = jsonWriter.writeValueAsString(obj).replace('"',' ');
             return ConfigFactory.parseString(jsonAsStr);
 
         } catch (JsonProcessingException e) {

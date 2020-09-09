@@ -31,19 +31,10 @@ public class RemoteRepoDownloader {
 
 
     public ParsableResource loadFileByName(SourceControlClient client, RepoDto repo, String folder, String fileToFind, List<String> filenames )  {
-        
-        if(StringUtils.isEmpty(fileToFind)){
-            return null;
-        }
-        String nameFound = filenames.stream()
-                .filter(fileToFind::equals)
-                .findAny()
-                .orElse(null);
-
-        if(nameFound!=null){
-            return downloadFiles(client, repo, folder, Collections.singletonList(nameFound)).get(0);
-        }
-        return null;
+        return Optional.ofNullable(fileToFind)
+        .filter(filenames::contains)
+        .map(foundFile -> downloadFiles(client, repo, folder, Collections.singletonList(foundFile)).get(0))
+        .orElse(null);
     }
 
 
@@ -138,19 +129,18 @@ public class RemoteRepoDownloader {
         List<ParsableResource> resources = new LinkedList<>();
         if (filenames == null || filenames.isEmpty()) {
             throw new IllegalArgumentException("file names can not be empty");
-        } else  {
-            filenames.stream().sorted().forEachOrdered(filename ->{
-                String fileContent = client.downloadFileContent(folder, filename, repo);
-                log.info("Config-as-code was found with content length: {}", fileContent.length());
-                FileContentResource configResourceImpl = null;
+        }
+        filenames.stream().sorted().forEachOrdered(filename ->{
+            String fileContent = client.downloadFileContent(folder, filename, repo);
+            log.info("Config-as-code was found with content length: {}", fileContent.length());
+            FileContentResource configResourceImpl = null;
 
-                configResourceImpl = new FileContentResource(fileContent, filename);
-               
-                resources.add(configResourceImpl);
-            });
+            configResourceImpl = new FileContentResource(fileContent, filename);
             
-            return resources;
-         }
+            resources.add(configResourceImpl);
+        });
+        
+        return resources;
     }
 
 
