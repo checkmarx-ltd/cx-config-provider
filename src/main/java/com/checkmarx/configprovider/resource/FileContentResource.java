@@ -28,7 +28,7 @@ public class FileContentResource extends AbstractFileResource implements ConfigR
 
     public FileContentResource(String fileContent, String name) {
         if(isYml(name)){
-            this.type = ResourceType.YML;
+            this.type = ResourceType.YAML;
         }else{
             this.type = ResourceType.JSON;
         }
@@ -53,7 +53,7 @@ public class FileContentResource extends AbstractFileResource implements ConfigR
      */
     @Override
     public Config loadConfig() throws ConfigurationException {
-        if(ResourceType.YML.equals(type)){
+        if(ResourceType.YAML.equals(type)){
             config = yamlToConfig(content, "");
         }else if(ResourceType.JSON.equals(type)){
             config = jsonToConfig(content);

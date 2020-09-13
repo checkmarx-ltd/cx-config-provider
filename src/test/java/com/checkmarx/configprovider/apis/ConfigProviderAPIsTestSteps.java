@@ -106,7 +106,7 @@ public class ConfigProviderAPIsTestSteps {
             EnvProperties envPropResourceImpl = new EnvProperties(false);
             envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
             configProvider.initBaseResource(APP_NAME, envPropResourceImpl);
-            FileResource fileResource = new FileResource(ResourceType.YML,filePath);
+            FileResource fileResource = new FileResource(ResourceType.YAML,filePath);
             configProvider.loadResource(FLOW_1, fileResource);
         } catch (FileNotFoundException | ConfigurationException e) {
             Assert.fail(e.getMessage());
@@ -138,7 +138,7 @@ public class ConfigProviderAPIsTestSteps {
 
     private void loadAppYml() throws FileNotFoundException, ConfigurationException {
         String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
-        FileResource fileResource = new FileResource(ResourceType.YML, filePath);
+        FileResource fileResource = new FileResource(ResourceType.YAML, filePath);
         configProvider.initBaseResource(APP_NAME, fileResource);
     }
 
@@ -146,8 +146,8 @@ public class ConfigProviderAPIsTestSteps {
     public void testBaseResourceUsingMultipleResources() throws FileNotFoundException, ConfigurationException{
         String appYmlPath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
         String appSecretsYmlPath = props.getFileUrlInClassloader(APPLICATION_SECRETS_TEST_API_YML);
-        FileResource appYmlResource = new FileResource(ResourceType.YML, appYmlPath);
-        FileResource appSecretsYmlResource = new FileResource(ResourceType.YML, appSecretsYmlPath);
+        FileResource appYmlResource = new FileResource(ResourceType.YAML, appYmlPath);
+        FileResource appSecretsYmlResource = new FileResource(ResourceType.YAML, appSecretsYmlPath);
         EnvProperties envPropResourceImpl = new EnvProperties(false);
         envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
 

@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import javax.naming.ConfigurationException;
 import java.io.File;
+import java.util.EnumSet;
 import java.util.Optional;
 
 /**
@@ -25,7 +26,7 @@ public class FileResource extends AbstractFileResource implements ConfigResource
             throw new ConfigurationException("File not found: " + filepath);
         }
         this.type = type;
-        if(!type.equals(ResourceType.JSON) && !type.equals(ResourceType.YML)) {
+        if(!EnumSet.of(ResourceType.JSON, ResourceType.YAML).contains(type)) {
             throw new UnsupportedOperationException();
         }
     }
@@ -33,7 +34,7 @@ public class FileResource extends AbstractFileResource implements ConfigResource
   
     @Override
     Config loadConfig() throws ConfigurationException {
-        if(ResourceType.YML.equals(type)){
+        if(ResourceType.YAML.equals(type)){
             config = yamlToConfig(file);
         }else if(ResourceType.JSON.equals(type)){
             config = jsonToConfig(file);

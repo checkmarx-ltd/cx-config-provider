@@ -26,7 +26,7 @@ public abstract class AbstractFileResource extends ParsableResource {
     protected AbstractFileResource(){}
 
     protected static boolean isYml(String name) {
-        return name.toUpperCase().endsWith(ResourceType.YML.toString().toUpperCase());
+        return name.toUpperCase().endsWith(ResourceType.YAML.toString().toUpperCase());
     }
 
     
@@ -45,7 +45,7 @@ public abstract class AbstractFileResource extends ParsableResource {
             return ConfigFactory.parseString(jsonAsStr);
 
         } catch (JsonProcessingException e) {
-            throw new ConfigurationException("Unable to parse YML configuration file " + path);
+            throw new ConfigurationException("Unable to parse YAML configuration file " + path);
         }
     }
 

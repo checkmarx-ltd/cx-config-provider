@@ -25,10 +25,10 @@ public class ConfigProvider {
     private ConfigProvider(){}
     
     public static ConfigProvider getInstance(){
-        if (instance == null) {
+        return Optional.ofNullable(instance).orElseGet(() -> {
             instance = new ConfigProvider();
-        }
-        return instance;
+            return instance;
+        });
     }
 
     public Config initBaseResource(String appName, ConfigResource configSource) throws ConfigurationException {
