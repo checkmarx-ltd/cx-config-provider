@@ -48,8 +48,8 @@ public class PropertyLoader {
             log.warn("Test property file is not found in resources: {}", filename);
         }
         else {
-            try {
-                properties.load(new FileReader(resource.getFile()));
+            try (FileReader fr = new FileReader(resource.getFile())) {
+                properties.load(fr);
             } catch (IOException e) {
                 log.warn("Error reading resource: {}", filename);
             }
