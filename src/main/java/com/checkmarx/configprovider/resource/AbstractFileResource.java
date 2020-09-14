@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigParseOptions;
-import com.typesafe.config.ConfigSyntax;
 
 import lombok.Getter;
 import org.apache.commons.io.IOUtils;
@@ -34,10 +32,7 @@ public abstract class AbstractFileResource extends ParsableResource {
 
     
     Config jsonToConfig(String fileContent) {
-        ConfigParseOptions options = ConfigParseOptions.defaults()
-            .setSyntax(ConfigSyntax.JSON)
-            .setAllowMissing(false);
-        return ConfigFactory.parseString(fileContent, options);
+        return ConfigFactory.parseString(fileContent);
     }
 
     Config yamlToConfig(String yamlContent, String path) throws ConfigurationException {
@@ -47,7 +42,9 @@ public abstract class AbstractFileResource extends ParsableResource {
 
             Object obj = yamlReader.readValue(yamlContent, Object.class);
             ObjectMapper jsonWriter = new ObjectMapper();
-            String jsonAsStr = jsonWriter.writeValueAsString(obj).replace('"',' ');
+            String jsonAsStr = jsonWriter.writeValueAsString(obj)
+                .replaceAll("(?<!\\\\)\"{1}"," ")
+                .replaceAll("\"{3}","\"");
             return ConfigFactory.parseString(jsonAsStr);
 
         } catch (JsonProcessingException e) {
