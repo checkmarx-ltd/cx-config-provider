@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigParseOptions;
+import com.typesafe.config.ConfigSyntax;
+
 import lombok.Getter;
 import org.apache.commons.io.IOUtils;
 
@@ -31,7 +34,10 @@ public abstract class AbstractFileResource extends ParsableResource {
 
     
     Config jsonToConfig(String fileContent) {
-        return ConfigFactory.parseString(fileContent);
+        ConfigParseOptions options = ConfigParseOptions.defaults()
+            .setSyntax(ConfigSyntax.JSON)
+            .setAllowMissing(false);
+        return ConfigFactory.parseString(fileContent, options);
     }
 
     Config yamlToConfig(String yamlContent, String path) throws ConfigurationException {
