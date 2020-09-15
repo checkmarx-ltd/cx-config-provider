@@ -27,7 +27,7 @@ public abstract class AbstractFileResource extends ParsableResource {
     protected AbstractFileResource(){}
 
     protected static boolean isYml(String name) {
-        return ResourceType.YAML == ResourceType.getTypeByExtention(name.substring(name.lastIndexOf('.'+1)));
+        return ResourceType.YAML == ResourceType.getTypeByNameOrExtention(name);
     }
 
     
@@ -43,7 +43,9 @@ public abstract class AbstractFileResource extends ParsableResource {
             Object obj = yamlReader.readValue(yamlContent, Object.class);
             ObjectMapper jsonWriter = new ObjectMapper();
             String jsonAsStr = jsonWriter.writeValueAsString(obj)
+                /*replace a single " with space if it is not escaped (\")*/
                 .replaceAll("(?<!\\\\)\"{1}"," ")
+                /*replace 3 " with a single " to support another escape standard*/
                 .replaceAll("\"{3}","\"");
             return ConfigFactory.parseString(jsonAsStr);
 

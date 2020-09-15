@@ -16,12 +16,13 @@ public enum ResourceType {
         this.fileExtentions = Arrays.asList(fileExtentions);
     }
 
-    public static ResourceType getTypeByExtention(String extention) {
+    public static ResourceType getTypeByNameOrExtention(String nameOrExtention) {
+        String extention = nameOrExtention.substring(nameOrExtention.lastIndexOf('.')+1);
         UnaryOperator<ResourceType> logAndReturn = res -> {
             log.info("extention {} is {}", extention, res);
             return res;
         };
-        log.info("resolving file type by extention");
+        log.info("resolving extention for {}", nameOrExtention);
         return Arrays.stream(values())
             .filter(type -> type.fileExtentions.contains(extention.toLowerCase().trim())).findAny()
             .map(logAndReturn)

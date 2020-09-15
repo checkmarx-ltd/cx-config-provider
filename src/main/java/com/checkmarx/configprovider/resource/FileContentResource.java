@@ -15,21 +15,19 @@ import java.util.Optional;
 public class FileContentResource extends AbstractFileResource implements ConfigResource {
     private String content;
     private String  name;
-    
+    /**
+    * @deprecated use {@link #FileContentResource(String, String, ResourceType)}
+    */
+    @Deprecated
     public FileContentResource(ResourceType type, String fileContent, String name)  {
-        this.type = type;
-        this.content = fileContent;
-        this.name = name;
+        this(fileContent, name, type);
     }
 
     public FileContentResource(String fileContent, String name) {
-        this.type = ResourceType.getTypeByExtention(name.substring(name.lastIndexOf('.')+1));      
-        this.content = fileContent;
-        this.name = name;
+        this(fileContent, name, ResourceType.getTypeByNameOrExtention(name));
     }
 
     public FileContentResource(String fileContent, String name, ResourceType type) {
-        
         this.type = type;
         this.content = fileContent;
         this.name = name;
