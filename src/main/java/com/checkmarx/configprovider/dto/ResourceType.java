@@ -2,14 +2,13 @@ package com.checkmarx.configprovider.dto;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public enum ResourceType {
-    YAML("yaml", "yml"), JSON("json"), PROPERTIES("properties"), ENV_VARIABLES("env"), COMBINED();
+    YAML("yaml", "yml", "configuration"), JSON("json"), PROPERTIES("properties"), ENV_VARIABLES("env"), COMBINED();
 
     private List<String> fileExtentions;
 
@@ -24,7 +23,7 @@ public enum ResourceType {
         };
         log.info("resolving file type by extention");
         return Arrays.stream(values())
-            .filter(type -> type.fileExtentions.contains(extention.toLowerCase())).findAny()
+            .filter(type -> type.fileExtentions.contains(extention.toLowerCase().trim())).findAny()
             .map(logAndReturn)
             .orElse(logAndReturn.apply(COMBINED));
         
