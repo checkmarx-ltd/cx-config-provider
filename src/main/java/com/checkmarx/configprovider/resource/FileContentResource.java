@@ -15,10 +15,6 @@ import java.util.Optional;
 public class FileContentResource extends AbstractFileResource implements ConfigResource {
     private String content;
     private String  name;
-
-    private FileContentResource(){
-        super();
-    }
     
     public FileContentResource(ResourceType type, String fileContent, String name)  {
         this.type = type;

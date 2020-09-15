@@ -27,7 +27,7 @@ public abstract class AbstractFileResource extends ParsableResource {
     protected AbstractFileResource(){}
 
     protected static boolean isYml(String name) {
-        return name.toUpperCase().endsWith(ResourceType.YAML.toString().toUpperCase());
+        return ResourceType.YAML == ResourceType.getTypeByExtention(name.substring(name.lastIndexOf('.'+1)));
     }
 
     
