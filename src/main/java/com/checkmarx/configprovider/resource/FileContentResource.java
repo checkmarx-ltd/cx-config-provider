@@ -27,12 +27,7 @@ public class FileContentResource extends AbstractFileResource implements ConfigR
     }
 
     public FileContentResource(String fileContent, String name) {
-        if(isYml(name)){
-            this.type = ResourceType.YAML;
-        }else{
-            this.type = ResourceType.JSON;
-        }
-        
+        this.type = ResourceType.getTypeByExtention(name.substring(name.lastIndexOf('.')+1));      
         this.content = fileContent;
         this.name = name;
     }

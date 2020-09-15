@@ -9,8 +9,6 @@ import com.checkmarx.configprovider.resource.ParsableResource;
 
 import com.checkmarx.configprovider.interfaces.SourceControlClient;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-
 import javax.naming.ConfigurationException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -40,20 +38,13 @@ public class RemoteRepoDownloader {
 
     public List<ParsableResource> loadFileBySuffix(SourceControlClient client, RepoDto repo, String folder, String suffix, List<String> folderFiles ) {
 
-        List<ParsableResource> emptyList = new LinkedList<>();
+        List<String> matchingFiles = Optional.ofNullable(suffix)
+        .map(thesuffix -> folderFiles.stream()
+        .filter(name -> name.endsWith(thesuffix))
+        .collect(Collectors.toList()))
+        .orElse(new LinkedList<>());
         
-        if(StringUtils.isEmpty(suffix)){
-            return emptyList;
-        }
-        List<String> matchingFiles = folderFiles.stream()
-                .filter(name -> name.endsWith(suffix))
-                .collect(Collectors.toList());
-        
-        if(!matchingFiles.isEmpty()){
-            return downloadFiles(client, repo, folder,matchingFiles);
-        }else {
-            return emptyList;
-        }
+        return matchingFiles.isEmpty() ? new LinkedList<>() : downloadFiles(client, repo, folder,matchingFiles);
     }
     
 
@@ -71,11 +62,10 @@ public class RemoteRepoDownloader {
 
             ParsableResource specificFile = loadFileByName(client, repo, folder, nameToFind, filenames);
 
-            if (specificFile != null) {
-                resources = Arrays.asList(specificFile);
-            } else {
-                resources = loadFileBySuffix(client, repo, folder, suffixToFind, filenames);
-            }
+            resources = Optional.ofNullable(specificFile)
+            .map(Arrays::asList)
+            .orElse(loadFileBySuffix(client, repo, folder, suffixToFind, filenames));
+            
             if (resources.isEmpty()) {
                 resources = downloadFiles(client, repo, folder, filenames);
             }
@@ -133,9 +123,7 @@ public class RemoteRepoDownloader {
         filenames.stream().sorted().forEachOrdered(filename ->{
             String fileContent = client.downloadFileContent(folder, filename, repo);
             log.info("Config-as-code was found with content length: {}", fileContent.length());
-            FileContentResource configResourceImpl = null;
-
-            configResourceImpl = new FileContentResource(fileContent, filename);
+            FileContentResource configResourceImpl = new FileContentResource(fileContent, filename);
             
             resources.add(configResourceImpl);
         });

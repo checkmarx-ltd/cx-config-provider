@@ -12,9 +12,9 @@ public enum ResourceType {
         this.fileExtentions = Arrays.asList(fileExtentions);
     }
 
-    public ResourceType getTypeByExtention(String extention) {
+    public static ResourceType getTypeByExtention(String extention) {
         return Arrays.stream(values())
-            .filter(type -> type.fileExtentions.contains(extention)).findAny()
+            .filter(type -> type.fileExtentions.contains(extention.toLowerCase())).findAny()
             .orElse(COMBINED);
         
     }
