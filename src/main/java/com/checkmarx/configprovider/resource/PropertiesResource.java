@@ -55,10 +55,11 @@ public class PropertiesResource extends ParsableResource implements ConfigResour
         if(!file.exists()){
             throw new FileNotFoundException(filepath);
         }
-        Properties prop = new Properties();
-        InputStream is = new FileInputStream(file);
-        prop.load(is);
-        properties.putAll(properties);
+        try (InputStream is = new FileInputStream(file);) {
+            Properties prop = new Properties();
+            prop.load(is);
+            properties.putAll(properties);
+        }        
     }
     
     @Override
