@@ -15,30 +15,19 @@ import java.util.Optional;
 public class FileContentResource extends AbstractFileResource implements ConfigResource {
     private String content;
     private String  name;
-
-    private FileContentResource(){
-        super();
-    }
-    
+    /**
+    * @deprecated use {@link #FileContentResource(String, String, ResourceType)}
+    */
+    @Deprecated
     public FileContentResource(ResourceType type, String fileContent, String name)  {
-        this.type = type;
-        this.content = fileContent;
-        this.name = name;
+        this(fileContent, name, type);
     }
 
     public FileContentResource(String fileContent, String name) {
-        if(isYml(name)){
-            this.type = ResourceType.YML;
-        }else{
-            this.type = ResourceType.JSON;
-        }
-        
-        this.content = fileContent;
-        this.name = name;
+        this(fileContent, name, ResourceType.getTypeByNameOrExtention(name));
     }
 
     public FileContentResource(String fileContent, String name, ResourceType type) {
-        
         this.type = type;
         this.content = fileContent;
         this.name = name;
@@ -53,7 +42,7 @@ public class FileContentResource extends AbstractFileResource implements ConfigR
      */
     @Override
     public Config loadConfig() throws ConfigurationException {
-        if(ResourceType.YML.equals(type)){
+        if(ResourceType.YAML.equals(type)){
             config = yamlToConfig(content, "");
         }else if(ResourceType.JSON.equals(type)){
             config = jsonToConfig(content);

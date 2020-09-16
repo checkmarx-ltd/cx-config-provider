@@ -28,7 +28,7 @@ public class URLResource extends AbstractFileResource implements ConfigResource 
      */
     @Override
     Config loadConfig() {
-        if(ResourceType.YML.equals(type)){
+        if(ResourceType.YAML.equals(type)){
             config = yamlToConfig(url);
         }else if(ResourceType.JSON.equals(type)){
             config = jsonToConfig(url);

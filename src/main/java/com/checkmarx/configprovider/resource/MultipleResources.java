@@ -6,6 +6,7 @@ import com.typesafe.config.Config;
 import javax.naming.ConfigurationException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -52,19 +53,15 @@ public class MultipleResources extends ParsableResource implements ConfigResourc
      */
     @Override
     Config loadConfig() throws ConfigurationException {
-
-        Config configFull = null;
+        Config current = null;
         for (ParsableResource configSource : configSourceList ) {
-            if(configFull == null){
-                configFull = configSource.loadConfig();
-            }else{
-                Config configCurrent = configSource.loadConfig();
-                configFull = configCurrent.withFallback(configFull);
-            }
-
+            Config base = configSource.loadConfig();
+            current = Optional.ofNullable(current)
+                .map(base::withFallback)
+                .orElse(base); /* for first iteration */
         }
 
-        return configFull;
+        return current;
     }
 
     @Override

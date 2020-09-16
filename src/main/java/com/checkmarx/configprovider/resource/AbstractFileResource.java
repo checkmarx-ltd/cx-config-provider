@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import lombok.Getter;
 import org.apache.commons.io.IOUtils;
 
@@ -26,7 +27,7 @@ public abstract class AbstractFileResource extends ParsableResource {
     protected AbstractFileResource(){}
 
     protected static boolean isYml(String name) {
-        return name.toUpperCase().endsWith(ResourceType.YML.toString().toUpperCase());
+        return ResourceType.YAML == ResourceType.getTypeByNameOrExtention(name);
     }
 
     
@@ -41,11 +42,15 @@ public abstract class AbstractFileResource extends ParsableResource {
 
             Object obj = yamlReader.readValue(yamlContent, Object.class);
             ObjectMapper jsonWriter = new ObjectMapper();
-            String jsonAsStr = jsonWriter.writeValueAsString(obj);
+            String jsonAsStr = jsonWriter.writeValueAsString(obj)
+                /*replace a single " with space if it is not escaped (\")*/
+                .replaceAll("(?<!\\\\)\"{1}"," ")
+                /*replace 3 " with a single " to support another escape standard*/
+                .replaceAll("\"{3}","\"");
             return ConfigFactory.parseString(jsonAsStr);
 
         } catch (JsonProcessingException e) {
-            throw new ConfigurationException("Unable to parse YML configuration file " + path);
+            throw new ConfigurationException("Unable to parse YAML configuration file " + path);
         }
     }
 

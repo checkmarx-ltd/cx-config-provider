@@ -1,0 +1,7 @@
+# simple_property: my simple property
+# system_property: ${system.prop}
+# environment_property: ${TMP}
+
+# included_simple_property: simple_property is ${simple_property} 
+# included_system_property: system_property is ${system_property}
+# included_environment_property: environment_property is ${environment_property}
