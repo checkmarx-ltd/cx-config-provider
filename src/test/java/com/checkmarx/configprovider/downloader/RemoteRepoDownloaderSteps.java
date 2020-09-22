@@ -4,8 +4,8 @@ import com.checkmarx.configprovider.dto.SourceProviderType;
 
 
 import com.checkmarx.configprovider.exceptions.ConfigProviderException;
-import com.checkmarx.configprovider.resource.Parser;
-import com.checkmarx.configprovider.resource.RepoResource;
+import com.checkmarx.configprovider.readers.Processor;
+import com.checkmarx.configprovider.readers.RepoReader;
 import com.checkmarx.configprovider.utility.PropertyLoader;
 
 import com.typesafe.config.Config;
@@ -89,18 +89,18 @@ public class RemoteRepoDownloaderSteps {
 
     private Config getConfigFromPath(String path) throws ConfigurationException {
 
-        RepoResource repoResource = getRemoteRepo();
+        RepoReader repoResource = getRemoteRepo();
         repoResource.setFoldersToSearch(Arrays.asList(path));
         
-        config = Parser.parse(repoResource);
+        config = Processor.load(repoResource);
         assertNotNull("Config-as-code object must always be non-null.", config);
         assertTrue("File content must always be non-null.", !config.isEmpty());
         return config;
     }
 
-    private RepoResource getRemoteRepo() {
+    private RepoReader getRemoteRepo() {
         if(SourceProviderType.GITHUB.equals(providerType)) {
-            return new RepoResource(GITHUB_API_URL,GITHUB_NAMESPACE,GITHUB_REPO, BRANCH, props.getProperty(GITHUB_TOKEN), SourceProviderType.GITHUB);
+            return new RepoReader(GITHUB_API_URL,GITHUB_NAMESPACE,GITHUB_REPO, BRANCH, props.getProperty(GITHUB_TOKEN), SourceProviderType.GITHUB);
         }else{
             throw new UnsupportedOperationException();
         }

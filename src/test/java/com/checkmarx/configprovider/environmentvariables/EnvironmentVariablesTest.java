@@ -17,7 +17,8 @@ import javax.naming.ConfigurationException;
 
 import com.checkmarx.configprovider.ConfigProvider;
 import com.checkmarx.configprovider.dto.ResourceType;
-import com.checkmarx.configprovider.resource.FileResource;
+import com.checkmarx.configprovider.readers.FileReader;
+import com.checkmarx.configprovider.readers.ListReaders;
 import com.checkmarx.configprovider.utility.PropertyLoader;
 import com.typesafe.config.Config;
 
@@ -80,8 +81,8 @@ public class EnvironmentVariablesTest {
 
     @When("resolving the configuration")
     public void resolving_the_configuration() throws ConfigurationException {
-        FileResource fileResource = new FileResource(ResourceType.YAML, filePath);
-        configProvider.initBaseResource("test", fileResource);
+        FileReader fileResource = new FileReader(ResourceType.YAML, filePath);
+        configProvider.init("test", new ListReaders(fileResource));
         resolved = configProvider.getConfigObject("test").toConfig().resolve();
     }
 

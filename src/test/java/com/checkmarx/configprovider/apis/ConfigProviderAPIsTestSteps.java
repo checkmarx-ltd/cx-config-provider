@@ -2,11 +2,11 @@ package com.checkmarx.configprovider.apis;
 
 import com.checkmarx.configprovider.ConfigProvider;
 import com.checkmarx.configprovider.dto.SourceProviderType;
-import com.checkmarx.configprovider.resource.EnvProperties;
-import com.checkmarx.configprovider.resource.FileResource;
-import com.checkmarx.configprovider.resource.MultipleResources;
-import com.checkmarx.configprovider.resource.PropertiesResource;
-import com.checkmarx.configprovider.resource.RepoResource;
+import com.checkmarx.configprovider.readers.EnvPropertiesReader;
+import com.checkmarx.configprovider.readers.FileReader;
+import com.checkmarx.configprovider.readers.ListReaders;
+import com.checkmarx.configprovider.readers.PropertiesReader;
+import com.checkmarx.configprovider.readers.RepoReader;
 import com.checkmarx.configprovider.dto.ResourceType;
 import com.checkmarx.configprovider.utility.PropertyLoader;
 import com.typesafe.config.ConfigObject;
@@ -43,6 +43,7 @@ public class ConfigProviderAPIsTestSteps {
 
     private static final String PRESET_FROM_GITHUB_YML = "presetYmlB";
     private static final String JIRA_PROJECT = "jira.project";
+    private static final String CONFIG_AS_CODE_FILE_NAME = "cx.configuration";
 
 
     static PropertyLoader props = new PropertyLoader();
@@ -84,30 +85,32 @@ public class ConfigProviderAPIsTestSteps {
         }
     }
 
-    private ConfigObject loadPropertiesRealToken() throws ConfigurationException {
-        PropertiesResource envPropResourceImpl = new PropertiesResource();
+    private PropertiesReader loadPropertiesRealToken() throws ConfigurationException {
+        PropertiesReader envPropResourceImpl = new PropertiesReader();
         
         envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, props.getProperty(GITHUB_TOKEN));
-        ConfigObject resource = configProvider.loadResource(FLOW_1, envPropResourceImpl);
-        return resource;
+        
+        return envPropResourceImpl;
     }
     
     private ConfigObject loadEnvProperties(boolean loadAll) throws ConfigurationException {
-        EnvProperties envPropResourceImpl = new EnvProperties(loadAll);
+        EnvPropertiesReader envPropResourceImpl = new EnvPropertiesReader(loadAll);
         envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
-        ConfigObject resource = configProvider.loadResource(FLOW_1, envPropResourceImpl);
-        return resource;
+        configProvider.init(FLOW_1, envPropResourceImpl);
+        return configProvider.getConfigObject(FLOW_1);
     }
 
     @Given("application.yml properties overrides env variables")
     public void loadAppEnvVarsAndThenApplicationYml(){
         try {
             String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
-            EnvProperties envPropResourceImpl = new EnvProperties(false);
+            EnvPropertiesReader envPropResourceImpl = new EnvPropertiesReader(false);
             envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
-            configProvider.initBaseResource(APP_NAME, envPropResourceImpl);
-            FileResource fileResource = new FileResource(ResourceType.YAML,filePath);
-            configProvider.loadResource(FLOW_1, fileResource);
+            FileReader fileResource = new FileReader(ResourceType.YAML,filePath);
+            ListReaders multiple = new ListReaders();
+            multiple.add(envPropResourceImpl);
+            multiple.add(fileResource);
+            configProvider.init(FLOW_1, multiple);
         } catch (FileNotFoundException | ConfigurationException e) {
             Assert.fail(e.getMessage());
         }
@@ -120,43 +123,44 @@ public class ConfigProviderAPIsTestSteps {
         try {
 
             loadAppYml();
-            ConfigObject configWithEnvs = loadPropertiesRealToken();
-            loadGithubResources(configWithEnvs, branch);
+            PropertiesReader propertiesReader = loadPropertiesRealToken();
+            loadGithubResources(propertiesReader, branch);
 
         } catch (FileNotFoundException | ConfigurationException e) {
             Assert.fail(e.getMessage());
         }
     }
     
-    private void loadGithubResources(ConfigObject configWithEnvs, String branch) throws ConfigurationException {
-        String confgiAsCodeFile = configProvider.getStringValue(FLOW_1, GITHUB_CONFIG_AS_CODE);
-        String token = extractGithubTokenFromBaseResource(FLOW_1);
-        RepoResource repoResource = getRemoteRepoLocation(branch, token);
-        repoResource.setConfigAsCodeFileName(confgiAsCodeFile);
-        configProvider.loadResources(FLOW_1, repoResource, configWithEnvs);
+    private void loadGithubResources(PropertiesReader baseResource, String branch) throws ConfigurationException {
+        String token = props.getProperty(GITHUB_TOKEN);
+        RepoReader repoResource = getRemoteRepoLocation(branch, token);
+        repoResource.setConfigAsCodeFileName(CONFIG_AS_CODE_FILE_NAME);
+        ListReaders listReaders = new ListReaders(baseResource).add(repoResource); 
+        configProvider.init(FLOW_1, listReaders);
     }
 
     private void loadAppYml() throws FileNotFoundException, ConfigurationException {
         String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
-        FileResource fileResource = new FileResource(ResourceType.YAML, filePath);
-        configProvider.initBaseResource(APP_NAME, fileResource);
+        FileReader fileResource = new FileReader(ResourceType.YAML, filePath);
+        
+        configProvider.init(APP_NAME, fileResource);
     }
 
     @Given ("application.yml, env variables and application-secrets.yml are loaded into initial resource using MultipleResourcesImpl")
     public void testBaseResourceUsingMultipleResources() throws FileNotFoundException, ConfigurationException{
         String appYmlPath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
         String appSecretsYmlPath = props.getFileUrlInClassloader(APPLICATION_SECRETS_TEST_API_YML);
-        FileResource appYmlResource = new FileResource(ResourceType.YAML, appYmlPath);
-        FileResource appSecretsYmlResource = new FileResource(ResourceType.YAML, appSecretsYmlPath);
-        EnvProperties envPropResourceImpl = new EnvProperties(false);
+        FileReader appYmlResource = new FileReader(ResourceType.YAML, appYmlPath);
+        FileReader appSecretsYmlResource = new FileReader(ResourceType.YAML, appSecretsYmlPath);
+        EnvPropertiesReader envPropResourceImpl = new EnvPropertiesReader(false);
         envPropResourceImpl.addPropertyPathValue(GITHUB_TOKEN, ENV_PROP_GIT_HUB_TOKEN);
 
-        MultipleResources multipleResources = new MultipleResources();
-        multipleResources.add(appYmlResource);
-        multipleResources.add(appSecretsYmlResource);
-        multipleResources.add(envPropResourceImpl);
+        ListReaders listReaders = new ListReaders();
+        listReaders.add(appYmlResource);
+        listReaders.add(appSecretsYmlResource);
+        listReaders.add(envPropResourceImpl);
         
-        configProvider.initBaseResource(FLOW_1, multipleResources);
+        configProvider.init(FLOW_1, listReaders);
     }
 
     @And ("the order of override will be based on the order of the files added to the MultipleResourcesImpl")
@@ -181,8 +185,10 @@ public class ConfigProviderAPIsTestSteps {
     @Then("GITHUB token from env variables is overridden by the {string} from application.yml")
     @Then("GITHUB token from application-test-api.yml is overridden by {string} loaded from the env variables")
     public void validateGithubToken(String resultToken){
-        String value = extractGithubTokenFromBaseResource(FLOW_1);
-        assertEquals(resultToken, value);
+        
+        String token = configProvider.getConfigObject(FLOW_1).toConfig().getString(GITHUB_TOKEN);
+
+        assertEquals(resultToken, token);
     }
     
     @Then("{string} env variable will override the one from application-test-api.yml")
@@ -197,9 +203,9 @@ public class ConfigProviderAPIsTestSteps {
     }
 
 
-    private String extractGithubTokenFromBaseResource(String appName) {
-        return configProvider.getConfigObject(appName).toConfig().getString(GITHUB_TOKEN);
-    }
+//    private String extractGithubTokenFromBaseResource(String appName) {
+//        return configProvider.getConfigObject(appName).toConfig().getString(GITHUB_TOKEN);
+//    }
 
     @Then("AST preset from application.yml is overridden by the preset from config-as-code {string}")
     @Then("AST preset from application.yml and preset from config-as-code is overridden by the preset from config-as-code.yml {string}")
@@ -230,9 +236,9 @@ public class ConfigProviderAPIsTestSteps {
     
 
 
-    private RepoResource getRemoteRepoLocation(String branch, String token) {
+    private RepoReader getRemoteRepoLocation(String branch, String token) {
         
-           return new RepoResource(GITHUB_API_URL,GITHUB_NAMESPACE,GITHUB_REPO, branch, token, SourceProviderType.GITHUB);
+           return new RepoReader(GITHUB_API_URL,GITHUB_NAMESPACE,GITHUB_REPO, branch, token, SourceProviderType.GITHUB);
     }
 
 }

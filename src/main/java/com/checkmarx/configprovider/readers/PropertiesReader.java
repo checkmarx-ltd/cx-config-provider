@@ -1,6 +1,6 @@
-package com.checkmarx.configprovider.resource;
+package com.checkmarx.configprovider.readers;
 
-import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
+import com.checkmarx.configprovider.dto.interfaces.ConfigReader;
 import com.checkmarx.configprovider.dto.ResourceType;
 import com.typesafe.config.*;
 
@@ -8,7 +8,7 @@ import javax.naming.ConfigurationException;
 import java.io.*;
 import java.util.Properties;
 
-public class PropertiesResource extends ParsableResource implements ConfigResource {
+public class PropertiesReader extends Parsable implements ConfigReader {
     
     protected ResourceType resourceType = ResourceType.PROPERTIES;
     Properties properties = new Properties();
@@ -63,7 +63,7 @@ public class PropertiesResource extends ParsableResource implements ConfigResour
     }
     
     @Override
-    Config loadConfig() throws ConfigurationException {
+    Config toConfig() throws ConfigurationException {
         return ConfigFactory.parseProperties(properties);
     }
 

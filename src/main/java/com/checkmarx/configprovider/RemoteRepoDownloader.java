@@ -2,10 +2,10 @@ package com.checkmarx.configprovider;
 
 import com.checkmarx.configprovider.dto.RepoDto;
 import com.checkmarx.configprovider.dto.SourceProviderType;
-import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
+import com.checkmarx.configprovider.dto.interfaces.ConfigReader;
 import com.checkmarx.configprovider.exceptions.ConfigProviderException;
-import com.checkmarx.configprovider.resource.FileContentResource;
-import com.checkmarx.configprovider.resource.ParsableResource;
+import com.checkmarx.configprovider.readers.FileContentReader;
+import com.checkmarx.configprovider.readers.Parsable;
 
 import com.checkmarx.configprovider.interfaces.SourceControlClient;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class RemoteRepoDownloader {
     private RepoDto repoDto;
 
 
-    public ParsableResource loadFileByName(SourceControlClient client, RepoDto repo, String folder, String fileToFind, List<String> filenames )  {
+    public Parsable loadFileByName(SourceControlClient client, RepoDto repo, String folder, String fileToFind, List<String> filenames )  {
         return Optional.ofNullable(fileToFind)
         .filter(filenames::contains)
         .map(foundFile -> downloadFiles(client, repo, folder, Collections.singletonList(foundFile)).get(0))
@@ -36,7 +36,7 @@ public class RemoteRepoDownloader {
     }
 
 
-    public List<ParsableResource> loadFileBySuffix(SourceControlClient client, RepoDto repo, String folder, String suffix, List<String> folderFiles ) {
+    public List<Parsable> loadFileBySuffix(SourceControlClient client, RepoDto repo, String folder, String suffix, List<String> folderFiles ) {
 
         List<String> matchingFiles = Optional.ofNullable(suffix)
         .map(thesuffix -> folderFiles.stream()
@@ -48,19 +48,19 @@ public class RemoteRepoDownloader {
     }
     
 
-    public List<ParsableResource> downloadRepoFiles(RepoDto repo, List<String> folders, String nameToFind, String suffixToFind) throws ConfigurationException {
+    public List<Parsable> downloadRepoFiles(RepoDto repo, List<String> folders, String nameToFind, String suffixToFind) throws ConfigurationException {
         log.info("Searching for a config-as-code file in a remote repo");
         validate(repo);
 
         this.repoDto = repo;
-        List<ParsableResource> resources = new LinkedList<>();
+        List<Parsable> resources = new LinkedList<>();
         
         SourceControlClient client = determineSourceControlClient();
 
         for (String folder : folders) {
             List<String> filenames = client.getDirectoryFilenames(repo, folder);
 
-            ParsableResource specificFile = loadFileByName(client, repo, folder, nameToFind, filenames);
+            Parsable specificFile = loadFileByName(client, repo, folder, nameToFind, filenames);
 
             resources = Optional.ofNullable(specificFile)
             .map(Arrays::asList)
@@ -71,7 +71,7 @@ public class RemoteRepoDownloader {
             }
         }
 
-        List<String> resourceNames = resources.stream().map(resource -> ((ConfigResource)resource).getName().concat(" ")).collect(Collectors.toList());
+        List<String> resourceNames = resources.stream().map(resource -> ((ConfigReader)resource).getName().concat(" ")).collect(Collectors.toList());
 
         log.info("Config files " + resourceNames + "\nwere found for repo: " + 
                 repo.getRepoName() +
@@ -115,15 +115,15 @@ public class RemoteRepoDownloader {
         return clientClass;
     }
 
-    private List<ParsableResource> downloadFiles(SourceControlClient client, RepoDto repo, String folder, List<String> filenames)  {
-        List<ParsableResource> resources = new LinkedList<>();
+    private List<Parsable> downloadFiles(SourceControlClient client, RepoDto repo, String folder, List<String> filenames)  {
+        List<Parsable> resources = new LinkedList<>();
         if (filenames == null || filenames.isEmpty()) {
             throw new IllegalArgumentException("file names can not be empty");
         }
         filenames.stream().sorted().forEachOrdered(filename ->{
             String fileContent = client.downloadFileContent(folder, filename, repo);
             log.info("Config-as-code was found with content length: {}", fileContent.length());
-            FileContentResource configResourceImpl = new FileContentResource(fileContent, filename);
+            FileContentReader configResourceImpl = new FileContentReader(fileContent, filename);
             
             resources.add(configResourceImpl);
         });

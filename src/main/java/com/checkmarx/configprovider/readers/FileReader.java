@@ -1,6 +1,6 @@
-package com.checkmarx.configprovider.resource;
+package com.checkmarx.configprovider.readers;
 
-import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
+import com.checkmarx.configprovider.dto.interfaces.ConfigReader;
 import com.checkmarx.configprovider.dto.ResourceType;
 import com.typesafe.config.Config;
 import lombok.Getter;
@@ -15,12 +15,12 @@ import java.util.Optional;
  */
 
 @Getter
-public class FileResource extends AbstractFileResource implements ConfigResource {
+public class FileReader extends AbstractFileReader implements ConfigReader {
 
     private File file;
     
     
-    public FileResource(ResourceType type, String filepath) throws ConfigurationException {
+    public FileReader(ResourceType type, String filepath) throws ConfigurationException {
         file = new File(filepath);
         if(!file.exists()){
             throw new ConfigurationException("File not found: " + filepath);
@@ -33,7 +33,7 @@ public class FileResource extends AbstractFileResource implements ConfigResource
     
   
     @Override
-    Config loadConfig() throws ConfigurationException {
+    Config toConfig() throws ConfigurationException {
         if(ResourceType.YAML.equals(type)){
             config = yamlToConfig(file);
         }else if(ResourceType.JSON.equals(type)){
