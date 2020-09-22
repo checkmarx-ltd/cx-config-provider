@@ -1,6 +1,6 @@
-package com.checkmarx.configprovider.resource;
+package com.checkmarx.configprovider.readers;
 
-import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
+import com.checkmarx.configprovider.dto.interfaces.ConfigReader;
 import com.checkmarx.configprovider.dto.ResourceType;
 import com.typesafe.config.Config;
 import lombok.Getter;
@@ -12,22 +12,22 @@ import java.util.Optional;
  * Contains String content of resources of type Yml or Json
  */
 @Getter
-public class FileContentResource extends AbstractFileResource implements ConfigResource {
+public class FileContentReader extends AbstractFileReader implements ConfigReader {
     private String content;
     private String  name;
     /**
-    * @deprecated use {@link #FileContentResource(String, String, ResourceType)}
+    * @deprecated use {@link #FileContentReader(String, String, ResourceType)}
     */
     @Deprecated
-    public FileContentResource(ResourceType type, String fileContent, String name)  {
+    public FileContentReader(ResourceType type, String fileContent, String name)  {
         this(fileContent, name, type);
     }
 
-    public FileContentResource(String fileContent, String name) {
+    public FileContentReader(String fileContent, String name) {
         this(fileContent, name, ResourceType.getTypeByNameOrExtention(name));
     }
 
-    public FileContentResource(String fileContent, String name, ResourceType type) {
+    public FileContentReader(String fileContent, String name, ResourceType type) {
         this.type = type;
         this.content = fileContent;
         this.name = name;
@@ -41,7 +41,7 @@ public class FileContentResource extends AbstractFileResource implements ConfigR
      * can not be converted to Config object
      */
     @Override
-    public Config loadConfig() throws ConfigurationException {
+    public Config toConfig() throws ConfigurationException {
         if(ResourceType.YAML.equals(type)){
             config = yamlToConfig(content, "");
         }else if(ResourceType.JSON.equals(type)){

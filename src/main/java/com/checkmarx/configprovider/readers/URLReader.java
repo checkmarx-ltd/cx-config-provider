@@ -1,6 +1,6 @@
-package com.checkmarx.configprovider.resource;
+package com.checkmarx.configprovider.readers;
 
-import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
+import com.checkmarx.configprovider.dto.interfaces.ConfigReader;
 import com.checkmarx.configprovider.dto.ResourceType;
 import com.typesafe.config.Config;
 import lombok.Getter;
@@ -11,12 +11,12 @@ import java.net.URL;
 
 
 @Getter
-public class URLResource extends AbstractFileResource implements ConfigResource {
+public class URLReader extends AbstractFileReader implements ConfigReader {
  
     private URL url;
 
     
-    public URLResource(ResourceType type, URL url) {
+    public URLReader(ResourceType type, URL url) {
         this.type = type;
         this.url = url;
     }
@@ -27,7 +27,7 @@ public class URLResource extends AbstractFileResource implements ConfigResource 
      * @return
      */
     @Override
-    Config loadConfig() {
+    Config toConfig() {
         if(ResourceType.YAML.equals(type)){
             config = yamlToConfig(url);
         }else if(ResourceType.JSON.equals(type)){

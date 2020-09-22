@@ -1,4 +1,4 @@
-package com.checkmarx.configprovider.resource;
+package com.checkmarx.configprovider.readers;
 
 import com.checkmarx.configprovider.dto.ResourceType;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,12 +19,12 @@ import java.nio.charset.StandardCharsets;
 
 
 @Getter
-public abstract class AbstractFileResource extends ParsableResource {
+public abstract class AbstractFileReader extends Parsable {
 
     protected ResourceType type;
     protected Config config;
 
-    protected AbstractFileResource(){}
+    protected AbstractFileReader(){}
 
     protected static boolean isYml(String name) {
         return ResourceType.YAML == ResourceType.getTypeByNameOrExtention(name);

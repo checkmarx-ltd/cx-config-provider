@@ -1,6 +1,6 @@
 package com.checkmarx.configprovider.dto.interfaces;
 
-public interface ConfigResource {
+public interface ConfigReader {
 
     String getName();
     

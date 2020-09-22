@@ -13,7 +13,7 @@ Feature: Configuration provider external apis tests
       | envPropGitHubToken |      
 
 
-  Scenario Outline: initial resource is a results of several resources: application.yml, env variables and application-secrets.yml
+  Scenario Outline: initial reader is a result of several resources: application.yml, env variables and application-secrets.yml
     Given application.yml, env variables and application-secrets.yml are loaded into initial resource using MultipleResourcesImpl
     Then GITHUB token from application-test-api.yml is overridden by "<github_token>" loaded from the env variables
     And AST token "<ast_token>" and AST preset "<ast_preset>" will be taken from application-secrets.yml

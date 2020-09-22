@@ -1,13 +1,13 @@
-package com.checkmarx.configprovider.resource;
+package com.checkmarx.configprovider.readers;
 
-import com.checkmarx.configprovider.dto.interfaces.ConfigResource;
+import com.checkmarx.configprovider.dto.interfaces.ConfigReader;
 import com.checkmarx.configprovider.dto.ResourceType;
 import com.checkmarx.configprovider.utility.PropertyLoader;
 
 
-public class EnvProperties extends PropertiesResource implements ConfigResource {
+public class EnvPropertiesReader extends PropertiesReader implements ConfigReader {
 
-    public EnvProperties(boolean loadEnvVariables)
+    public EnvPropertiesReader(boolean loadEnvVariables)
     {
         resourceType = ResourceType.ENV_VARIABLES;
 
