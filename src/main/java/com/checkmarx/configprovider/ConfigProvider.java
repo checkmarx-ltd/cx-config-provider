@@ -1,17 +1,20 @@
 package com.checkmarx.configprovider;
 
+import com.checkmarx.configprovider.annotations.AnnotationsHandler;
 import com.checkmarx.configprovider.dto.interfaces.ConfigReader;
 import com.checkmarx.configprovider.readers.ListReaders;
 import com.checkmarx.configprovider.readers.Processor;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 
+import lombok.extern.slf4j.Slf4j;
 
 import javax.naming.ConfigurationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 public class ConfigProvider {
 
     Map<String, Config> configurationMap = new HashMap<>();
@@ -51,9 +54,30 @@ public class ConfigProvider {
     }
 
 
+    /**
+     * @deprecated
+     * use {@link #getConfiguration(String, Object)}
+     * @param uid
+     * @return
+     */
+    @Deprecated
     public ConfigObject getConfigObject(String uid){
         return Optional.ofNullable(configurationMap.get(uid)).map(Config::root)
         .orElse(null);
+    }
+
+    public <T extends Object> T getConfiguration(String uid , T object) {
+        Optional<String> treePath = AnnotationsHandler.getCofigurationTreePath(object.getClass());
+        if (treePath.isEmpty()) {
+            log.warn("class {} does not have an associated configuration path, using root", object.getClass().getName());
+        }
+
+        Optional<Config> config = Optional.ofNullable(configurationMap.get(uid));
+        config.ifPresent(conf -> {
+            Config currentConfig = treePath.map(conf::getConfig).orElse(conf.root().toConfig());
+            AnnotationsHandler.setValuesByConfiguration(object , currentConfig);
+        });
+        return object;
     }
     
 
