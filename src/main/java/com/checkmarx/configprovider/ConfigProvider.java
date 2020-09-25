@@ -68,7 +68,7 @@ public class ConfigProvider {
 
     public <T extends Object> T getConfiguration(String uid , T object) {
         Optional<String> treePath = AnnotationsHandler.getCofigurationTreePath(object.getClass());
-        if (treePath.isEmpty()) {
+        if (treePath.isPresent() && treePath.get().isEmpty()) {
             log.warn("class {} does not have an associated configuration path, using root", object.getClass().getName());
         }
 

@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.typesafe.config.Config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class AnnotationsHandler {
@@ -21,12 +22,12 @@ public class AnnotationsHandler {
         Arrays.stream(object.getClass().getDeclaredFields())
         .forEach(field -> 
             Optional.ofNullable(field.getAnnotation(ConfigurationProperty.class))
-            .map(ConfigurationProperty::value).map(value -> value.isBlank() ? field.getName() : value)
+            .map(ConfigurationProperty::value).map(value -> StringUtils.isBlank(value) ? field.getName() : value)
             .ifPresent(name -> 
                 Optional.ofNullable(currentConfig.getString(name)).filter(value -> !value.isEmpty())
                 .ifPresent(value -> {
                     try {
-                        boolean accessible = field.canAccess(object);
+                        boolean accessible = field.isAccessible();
                         field.setAccessible(true);
                         field.set(object, value);
                         field.setAccessible(accessible);
