@@ -4,13 +4,13 @@ Feature: Configuration provider external apis tests
     #      - and GITHUB token is defined in environment
     #      - and config provider is initialized by loading application-test-api.yml
     #      - and env properties are loaded using config provider
-  Scenario Outline: Config provider loads data of a GITHUB_TOKEN env property and from application.yml 
+  Scenario Outline: Config provider loads data of a GITHUB_TOKEN env property and from application.yml
                     and env variable overrides application.yml property
     Given env variable overrides application.yml property
     Then GITHUB token from application-test-api.yml is overridden by "<github_token>" loaded from the env variables
     Examples:
-      | github_token       | 
-      | envPropGitHubToken |      
+      | github_token       |
+      | envPropGitHubToken |
 
 
   Scenario Outline: initial reader is a result of several resources: application.yml, env variables and application-secrets.yml
@@ -22,7 +22,7 @@ Feature: Configuration provider external apis tests
     Examples:
       | github_token       | ast_token| ast_preset|
       | envPropGitHubToken | astTokenFromSecrets| presetFromAppSecretsYml|
-  
+
    #   - Application is started with GITHUB token defined in environment
    #   - and GITHUB token application-test-api.yml
    #   - and config provider is initialized by loading environment
@@ -45,7 +45,7 @@ Feature: Configuration provider external apis tests
      Given github config-as-code(GITHUB) over env variables over application.yml in branch "<branch>"
     Then AST preset from application.yml is overridden by the preset from config-as-code "<preset_result>"
     Examples:
-      | branch | preset_result          | 
+      | branch | preset_result          |
       | test1  | presetFromConfigAsCode |
 
 #  - application is started with GITHUB token and AST parameters in application-test-api.yml
@@ -78,12 +78,18 @@ Feature: Configuration provider external apis tests
       | branch | jira.project | preset_result |
       | test3  | jiraProjectB | presetYmlB    |
 
-    
-  Scenario Outline: Config provider data from application.yml and then 
+
+  Scenario Outline: Config provider data from application.yml and then
                     and it loads all environment variables defined in the operation system,
                     therefore env variables override application.yml properties
     Given Config provider loads all environment variables and then data from application.yml
     Then "<path>" env variable will override the one from application-test-api.yml
     Examples:
-      | path | 
-      | path | 
+      | path |
+      | path |
+
+
+  Scenario: Init a new Java class from a configuration
+    Given a configuration
+    When passing a new bean class
+    Then class values are initialized with configuration
