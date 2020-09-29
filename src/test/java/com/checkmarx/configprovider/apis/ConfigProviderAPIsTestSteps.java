@@ -15,6 +15,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import org.junit.Assert;
 
 import javax.naming.ConfigurationException;
@@ -51,6 +52,7 @@ public class ConfigProviderAPIsTestSteps {
 
     private Exception exception;
     private ConfigProvider configProvider;
+    private AstConfigurationLoaderTestClass astConfigurationLoaderTestClass;
 
 
     @Before()
@@ -234,7 +236,23 @@ public class ConfigProviderAPIsTestSteps {
         assertEquals("valueFromB", valueUniqueFromB);
     }
     
+    @Given("a configuration")
+    public void loadConfiguration() throws FileNotFoundException, ConfigurationException {
+        loadAppYml();
+    }
 
+    @When("passing a new bean class")
+    public void passingNewBeanClass() {
+        astConfigurationLoaderTestClass = configProvider.getConfiguration(APP_NAME, "ast", AstConfigurationLoaderTestClass.class);
+    }
+
+    @Then("class values are initialized with configuration")
+    public void validateReturnedClass() {
+        assertEquals("AST API URI value from configuration is not as expected", "astURL", astConfigurationLoaderTestClass.getApiUrl());
+        assertEquals("AST token value from configuration is not as expected", "astToken", astConfigurationLoaderTestClass.getToken());
+        assertEquals("AST preset value from configuration is not as expected", "presetFromAppYml", astConfigurationLoaderTestClass.getPreset());
+        assertFalse("AST incremental value from configuration is not as expected", astConfigurationLoaderTestClass.isIncremental());
+    }
 
     private RepoReader getRemoteRepoLocation(String branch, String token) {
         
