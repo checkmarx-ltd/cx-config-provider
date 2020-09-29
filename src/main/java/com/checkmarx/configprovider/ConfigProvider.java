@@ -1,10 +1,10 @@
 package com.checkmarx.configprovider;
 
-import com.checkmarx.configprovider.annotations.AnnotationsHandler;
 import com.checkmarx.configprovider.dto.interfaces.ConfigReader;
 import com.checkmarx.configprovider.readers.ListReaders;
 import com.checkmarx.configprovider.readers.Processor;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigBeanFactory;
 import com.typesafe.config.ConfigObject;
 
 import lombok.extern.slf4j.Slf4j;
@@ -66,18 +66,15 @@ public class ConfigProvider {
         .orElse(null);
     }
 
-    public <T extends Object> T getConfiguration(String uid , T object) {
-        Optional<String> treePath = AnnotationsHandler.getCofigurationTreePath(object.getClass());
-        if (treePath.isPresent() && treePath.get().isEmpty()) {
-            log.warn("class {} does not have an associated configuration path, using root", object.getClass().getName());
+    public <T extends Object> T getConfiguration(String uid , Class<T> clazz) {
+        log.info("reading configuration {} into class {}", uid, clazz.getSimpleName());
+        Config config = configurationMap.get(uid);
+        if (!config.isResolved()) {
+            log.warn("reading configuration ({}) forced resolving the configuration", uid);
+            config = config.resolve();
+            store(uid, config);
         }
-
-        Optional<Config> config = Optional.ofNullable(configurationMap.get(uid));
-        config.ifPresent(conf -> {
-            Config currentConfig = treePath.map(conf::getConfig).orElse(conf.root().toConfig());
-            AnnotationsHandler.setValuesByConfiguration(object , currentConfig);
-        });
-        return object;
+        return ConfigBeanFactory.create(config, clazz);
     }
     
 
