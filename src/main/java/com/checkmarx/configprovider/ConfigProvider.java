@@ -85,17 +85,12 @@ public class ConfigProvider {
             store(uid, config);
         }
         config = config.getConfig(configSection);
-        replaceOptionals(clazz);
         try {
             return ConfigBeanFactory.create(config, clazz);
 
         } catch (ConfigException e) {
             throw new ConfigProviderException(e.getMessage());
         }
-    }
-
-    private <T extends Object> void replaceOptionals(Class<T> clazz) {
-
     }
 
 
