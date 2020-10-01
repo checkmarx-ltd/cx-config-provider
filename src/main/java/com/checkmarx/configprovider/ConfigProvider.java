@@ -68,6 +68,22 @@ public class ConfigProvider {
         .orElse(null);
     }
 
+    public boolean hasAnyConfiguration(String uid) {
+        return Optional.ofNullable(configurationMap.get(uid))
+                .map(Config::root)
+                .map(ConfigObject::toConfig)
+                .map(config -> !config.isEmpty())
+                .orElse(false);
+    }
+
+    public boolean hasConfiguration(String uid, String configSection) {
+        return Optional.ofNullable(configurationMap.get(uid))
+                .map(Config::root)
+                .map(ConfigObject::toConfig)
+                .map(config -> config.hasPath(configSection))
+                .orElse(false);
+    }
+
     /**
      *  Use the @com.typesafe.config.Optional annotation to mark a field which may not be part of the configuration
      * @param uid id of the configuration
@@ -77,6 +93,11 @@ public class ConfigProvider {
      * @return an initiated bean of type {@code clazz} with the values from section  {@code configSection} of the configuration {@code uid}
      */
     public <T extends Object> T getConfiguration(String uid, String configSection, Class<T> clazz) {
+        if (!hasConfiguration(uid, configSection)) {
+            log.warn("No matching configuration for {} {}. returning null", uid, configSection);
+            return null;
+        }
+
         log.info("reading configuration {} into class {}", uid, clazz.getSimpleName());
         Config config = configurationMap.get(uid).root().toConfig();
         if (!config.isResolved()) {
