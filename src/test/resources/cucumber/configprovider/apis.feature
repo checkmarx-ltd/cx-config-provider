@@ -41,6 +41,7 @@ Feature: Configuration provider external apis tests
 #  - and config provider is initialized by loading application-test-api.yml
 #  - and config provider is initialized by loading env variables
 #  - and config provider is initialized with github repository
+  @Skip
   Scenario Outline: github config-as-code(GITHUB) over env variables over application.yml
      Given github config-as-code(GITHUB) over env variables over application.yml in branch "<branch>"
     Then AST preset from application.yml is overridden by the preset from config-as-code "<preset_result>"
