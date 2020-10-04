@@ -43,7 +43,11 @@ public abstract class AbstractFileReader extends Parsable {
             Object obj = yamlReader.readValue(yamlContent, Object.class);
             ObjectMapper jsonWriter = new ObjectMapper();
             String jsonAsStr = jsonWriter.writeValueAsString(obj)
-                /*replace a single " with space if it is not escaped (\")*/
+                /*
+                 *  replace a single " with space if it is not escaped (\")
+                 *  a value surrounded by " or a value with no " will be resolved. ex. "java home is ${JAVA_HOME}"
+                 *  a value surrounded by \" will not be resolved. ex. \"this is a string with special characters $ { \"
+                 */
                 .replaceAll("(?<!\\\\)\"{1}"," ")
                 .replace("\\\\\\\"","\"");
             return ConfigFactory.parseString(jsonAsStr);
