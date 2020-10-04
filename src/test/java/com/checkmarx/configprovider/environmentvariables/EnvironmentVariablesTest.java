@@ -21,7 +21,6 @@ import com.checkmarx.configprovider.readers.FileReader;
 import com.checkmarx.configprovider.readers.ListReaders;
 import com.checkmarx.configprovider.utility.PropertyLoader;
 import com.typesafe.config.Config;
-
 import org.junit.Test;
 
 import io.cucumber.java.After;
@@ -29,10 +28,24 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class EnvironmentVariablesTest {
+
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public static class TestBean {
+        String simple_property;
+        String environment_variable;
+        String included_simple_property; 
+        String included_environment_variable; 
+        
+    }
 
     static PropertyLoader props = new PropertyLoader();
 
@@ -41,7 +54,6 @@ public class EnvironmentVariablesTest {
     private Map<String, String> environmentReplacedProperties;
     private ConfigProvider configProvider;
     private String filePath;
-    private Config resolved;
 
     @Test
     public void sonarlintbug() {
@@ -83,13 +95,20 @@ public class EnvironmentVariablesTest {
     public void resolving_the_configuration() throws ConfigurationException {
         FileReader fileResource = new FileReader(ResourceType.YAML, filePath);
         configProvider.init("test", new ListReaders(fileResource));
-        resolved = configProvider.getConfigObject("test").toConfig().resolve();
+        // resolved = configProvider.getConfigObject("test").toConfig().resolve();
     }
 
     @Then("created resolved values are:")
     public void created_resolved_values_are(Map<String,String> expected) {
-        expected.forEach((key, value) -> assertEquals(resolved.getString(key),
-            value.replace("___path_to_JAVA_HOME___", environmentReplacedProperties.get("JAVA_HOME"))));
+        TestBean bean = configProvider.getConfiguration("test", "test", TestBean.class);
+        assertEquals(expected.get("simple_property") , bean.getSimple_property());
+        assertEquals(
+            expected.get("environment_variable").replace("___path_to_JAVA_HOME___", environmentReplacedProperties.get("JAVA_HOME")) , 
+            bean.getEnvironment_variable());
+        assertEquals(expected.get("included_simple_property") , bean.included_simple_property);
+        assertEquals(
+            expected.get("included_environment_variable").replace("___path_to_JAVA_HOME___", environmentReplacedProperties.get("JAVA_HOME")) , 
+            bean.included_environment_variable);
     }
 
     @After

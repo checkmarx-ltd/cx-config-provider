@@ -5,10 +5,12 @@ import com.checkmarx.configprovider.dto.RepoDto;
 import com.checkmarx.configprovider.RemoteRepoDownloader;
 import com.checkmarx.configprovider.dto.SourceProviderType;
 import com.typesafe.config.Config;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.naming.ConfigurationException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,6 +20,8 @@ import java.util.List;
  * and .checkmarx folder where all the yml configuration files will be located
  */
 @Getter
+@Builder
+@AllArgsConstructor
 public class RepoReader extends Parsable implements ConfigReader {
 
     private static final String DEFAULT_SEARCH_DIRECTORY = ".checkmarx";

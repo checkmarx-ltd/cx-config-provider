@@ -6,11 +6,12 @@ Feature: Override existing config property with environment variables
         This is the basic exact match override
         Given the following cofiguration:
         """
-        simple_property: my simple property
-        environment_variable: ${JAVA_HOME}
+        test:
+            simple_property: my simple property
+            environment_variable: ${JAVA_HOME}
 
-        included_simple_property: simple_property is ${simple_property} 
-        included_environment_variable: environment_variable is ${environment_variable}
+            included_simple_property: simple_property is ${test.simple_property} 
+            included_environment_variable: environment_variable is ${test.environment_variable}
         """
         And environment variable named "JAVA_HOME" is set
         When resolving the configuration
