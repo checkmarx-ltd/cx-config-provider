@@ -55,19 +55,6 @@ public class ConfigProvider {
         configurationMap.put(uid, config);
     }
 
-
-    /**
-     * @deprecated
-     * use {@link #getConfiguration(String, String, Class)}
-     * @param uid key in the configuration map
-     * @return
-     */
-    @Deprecated
-    public ConfigObject getConfigObject(String uid){
-        return Optional.ofNullable(configurationMap.get(uid)).map(Config::root)
-        .orElse(null);
-    }
-
     public boolean hasAnyConfiguration(String uid) {
         return Optional.ofNullable(configurationMap.get(uid))
                 .map(Config::root)
