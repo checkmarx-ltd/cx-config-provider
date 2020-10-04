@@ -45,20 +45,13 @@ public abstract class AbstractFileReader extends Parsable {
             String jsonAsStr = jsonWriter.writeValueAsString(obj)
                 /*replace a single " with space if it is not escaped (\")*/
                 .replaceAll("(?<!\\\\)\"{1}"," ")
-                /*replace 3 " with a single " to support another escape standard*/
-                .replaceAll("\"{3}","\"");
+                .replace("\\\\\\\"","\"");
             return ConfigFactory.parseString(jsonAsStr);
 
         } catch (JsonProcessingException e) {
             throw new ConfigurationException("Unable to parse YAML configuration file " + path);
         }
     }
-
-
-    Config jsonToConfig(File file) {
-        return ConfigFactory.parseFile(file);
-    }
-
 
     Config jsonToConfig(URL file) {
         return ConfigFactory.parseURL(file);
@@ -74,6 +67,21 @@ public abstract class AbstractFileReader extends Parsable {
             String yamlContent = IOUtils.toString(new FileInputStream(file.getPath()), StandardCharsets.UTF_8);
 
             return yamlToConfig(yamlContent, file.getPath()) ;
+
+        } catch (IOException e) {
+            throw new ConfigurationException("Unable to read URL " + file.getPath());
+
+        }
+
+        
+    }
+
+    Config jsonToConfig(File file) throws ConfigurationException {
+
+        try {
+            String jsonContent = IOUtils.toString(new FileInputStream(file.getPath()), StandardCharsets.UTF_8);
+
+            return jsonToConfig(jsonContent) ;
 
         } catch (IOException e) {
             throw new ConfigurationException("Unable to read URL " + file.getPath());

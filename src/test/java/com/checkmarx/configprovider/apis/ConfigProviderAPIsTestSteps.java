@@ -16,6 +16,8 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import lombok.extern.slf4j.Slf4j;
+
 import org.junit.Assert;
 
 import javax.naming.ConfigurationException;
@@ -24,7 +26,7 @@ import java.io.FileNotFoundException;
 
 import static org.junit.Assert.*;
 
-
+@Slf4j
 public class ConfigProviderAPIsTestSteps {
     
     private static final String GITHUB_REPO = "configProviderTests";
@@ -33,6 +35,7 @@ public class ConfigProviderAPIsTestSteps {
     private static final String GITHUB_TOKEN = "github.token";
     private static final String GITHUB_API_URL = "https://api.github.com";
     private static final String APPLICATION_TEST_API_YML = "application-test-api.yml";
+    private static final String APPLICATION_TEST_API_JSON = "application-test-api.json";
     private static final String APPLICATION_SECRETS_TEST_API_YML = "application-test-api-secrets.yml";
     private static final String APP_NAME = "ConfigProviderAPIsTest";
     private static final String FLOW_1 = "flow1";
@@ -148,6 +151,13 @@ public class ConfigProviderAPIsTestSteps {
         configProvider.init(APP_NAME, fileResource);
     }
 
+    private void loadAppJson() throws FileNotFoundException, ConfigurationException {
+        String filePath = props.getFileUrlInClassloader(APPLICATION_TEST_API_JSON);
+        FileReader fileResource = new FileReader(ResourceType.JSON, filePath);
+        
+        configProvider.init(APP_NAME, fileResource);
+    }
+
     @Given ("application.yml, env variables and application-secrets.yml are loaded into initial resource using MultipleResourcesImpl")
     public void testBaseResourceUsingMultipleResources() throws FileNotFoundException, ConfigurationException{
         String appYmlPath = props.getFileUrlInClassloader(APPLICATION_TEST_API_YML);
@@ -236,9 +246,16 @@ public class ConfigProviderAPIsTestSteps {
         assertEquals("valueFromB", valueUniqueFromB);
     }
     
-    @Given("a configuration")
-    public void loadConfiguration() throws FileNotFoundException, ConfigurationException {
-        loadAppYml();
+    @Given("a {word} configuration")
+    public void loadConfiguration(String type) throws FileNotFoundException, ConfigurationException {
+        switch (type) {
+        case "YAML":
+            loadAppYml();
+            break;
+        case "JSON":
+            loadAppJson();
+            break;
+        }
     }
 
     @When("passing a new bean class")
@@ -248,9 +265,13 @@ public class ConfigProviderAPIsTestSteps {
 
     @Then("class values are initialized with configuration")
     public void validateReturnedClass() {
-        assertEquals("AST API URI value from configuration is not as expected", "astURL", astConfigurationLoaderTestClass.getApiUrl());
+        log.info("validating a normal String");
         assertEquals("AST token value from configuration is not as expected", "astToken", astConfigurationLoaderTestClass.getToken());
-        assertEquals("AST preset value from configuration is not as expected", "presetFromAppYml", astConfigurationLoaderTestClass.getPreset());
+        log.info("validating a String with special characters");
+        assertEquals("AST API URI value from configuration is not as expected", "http://this.is.just.a.test", astConfigurationLoaderTestClass.getApiUrl());
+        log.info("validating a resolved value");
+        assertEquals("AST preset value from configuration is not as expected", System.getenv("JAVA_HOME"), astConfigurationLoaderTestClass.getPreset());
+        log.info("validating a boolean value");
         assertFalse("AST incremental value from configuration is not as expected", astConfigurationLoaderTestClass.isIncremental());
     }
 

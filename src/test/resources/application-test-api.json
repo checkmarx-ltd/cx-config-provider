@@ -1,0 +1,13 @@
+{
+    "github": {
+        "token": "githubTokenFromApp",
+        "configAsCode": "cx.configuration"
+    },
+    "ast": {
+        "apiUrl": "http://this.is.just.a.test",
+        "token": "astToken",
+        "preset": ${JAVA_HOME},
+        "incremental": false
+    },
+    "path": "appPath"
+}

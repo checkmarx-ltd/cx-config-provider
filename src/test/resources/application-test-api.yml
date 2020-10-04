@@ -3,9 +3,9 @@ github:
   configAsCode: cx.configuration
   
 ast:
-  apiUrl: astURL
+  apiUrl: \"http://this.is.just.a.test\"
   token: astToken
-  preset: presetFromAppYml
+  preset: ${JAVA_HOME}
   incremental: false
   
 path: appPath
