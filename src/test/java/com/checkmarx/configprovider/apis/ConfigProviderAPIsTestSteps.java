@@ -273,6 +273,8 @@ public class ConfigProviderAPIsTestSteps {
         assertEquals("AST preset value from configuration is not as expected", System.getenv("JAVA_HOME"), astConfigurationLoaderTestClass.getPreset());
         log.info("validating a boolean value");
         assertFalse("AST incremental value from configuration is not as expected", astConfigurationLoaderTestClass.isIncremental());
+        log.info("validating missing Optional parameter");
+        assertFalse("AST myParam Optional parameter was true", astConfigurationLoaderTestClass.isMyParam());
     }
 
     private RepoReader getRemoteRepoLocation(String branch, String token) {
