@@ -73,6 +73,9 @@ public class ListReaders extends Parsable implements ConfigReader {
         Config current = null;
         for (ConfigReader configSource : readersList) {
             Config base = ((Parsable)configSource).toConfig();
+            if (base == null) {
+                continue;
+            }
             current = Optional.ofNullable(current)
                 .map(base::withFallback)
                 .orElse(base); /* for first iteration */

@@ -66,7 +66,7 @@ public class RemoteRepoDownloader {
             .map(Arrays::asList)
             .orElse(loadFileBySuffix(client, repo, folder, suffixToFind, filenames));
             
-            if (resources.isEmpty()) {
+            if (resources.isEmpty() && filenames != null && !filenames.isEmpty()) {
                 resources = downloadFiles(client, repo, folder, filenames);
             }
         }
