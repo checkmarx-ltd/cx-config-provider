@@ -81,7 +81,7 @@ public class ConfigProvider {
      */
     public <T extends Object> T getConfiguration(String uid, String configSection, Class<T> clazz) {
         if (!hasConfiguration(uid, configSection)) {
-            log.warn("No matching configuration for {} {}. returning null", uid, configSection);
+            log.debug("No matching configuration for {} {}. returning null", uid, configSection);
             return null;
         }
 
