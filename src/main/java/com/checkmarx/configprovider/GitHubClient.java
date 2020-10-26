@@ -73,17 +73,19 @@ class GitHubClient implements SourceControlClient {
                 log.warn("Error downloading directory contents", e);
             }
 
-            log.info("Files found: {}", result);
-        
+            if(!result.isEmpty()) {
+                log.info("Files found: {}", result);
+            }
+
         return result;
     }
 
     private static String normalize(String path) {
         String result = StringUtils.defaultString(path);
         if (result.isEmpty()) {
-            log.info("Getting filenames from the root directory");
+            log.debug("Getting filenames from the root directory");
         } else {
-            log.info("Getting filenames from the '{}' directory", result);
+            log.debug("Getting filenames from the '{}' directory", result);
         }
         return result;
     }
@@ -120,8 +122,7 @@ class GitHubClient implements SourceControlClient {
         if (statusCode == HttpStatus.SC_OK) {
             result = extractFilenamesFromJson(responseText);
         } else {
-            log.warn("Error loading filenames. The response status is '{}'. Make sure that namespace, repo name " +
-                    "and path are correct and that you have access to the repo.", response.getStatusLine());
+            log.debug("config provider could not find files");
         }
         return result;
     }
