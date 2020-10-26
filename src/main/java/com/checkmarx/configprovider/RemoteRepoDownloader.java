@@ -73,10 +73,11 @@ public class RemoteRepoDownloader {
 
         List<String> resourceNames = resources.stream().map(resource -> ((ConfigReader)resource).getName().concat(" ")).collect(Collectors.toList());
 
-        log.info("Config files " + resourceNames + "\nwere found for repo: " + 
-                repo.getRepoName() +
-                " in folders: " + folders );
-        
+        if(!resourceNames.isEmpty()) {
+            log.info("Config files " + resourceNames + "\nwere found for repo: " +
+                    repo.getRepoName() +
+                    " in folders: " + folders);
+        }
         return resources;
         
     }
