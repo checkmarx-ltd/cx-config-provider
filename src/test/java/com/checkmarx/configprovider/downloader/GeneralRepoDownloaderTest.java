@@ -3,9 +3,15 @@ package com.checkmarx.configprovider.downloader;
 import com.checkmarx.configprovider.GeneralGitDownloader;
 import com.checkmarx.configprovider.dto.GeneralRepoDto;
 import com.checkmarx.configprovider.dto.ProtocolType;
+import com.checkmarx.configprovider.readers.Parsable;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
@@ -26,8 +32,8 @@ public class GeneralRepoDownloaderTest {
         repoDto.setSrcUrl("https://github.com/cx-muhammed/sample.git");
 
 
-        String path = downloader.downloadRepoFilesAndGetPath(repoDto);
-        assertTrue(StringUtils.isNotBlank(path));
+        List<Parsable> path = downloader.downloadRepoFiles(repoDto, new ArrayList<>(),"cx");
+        assertTrue(path != null && !path.isEmpty());
     }
 
     @Test
@@ -37,8 +43,8 @@ public class GeneralRepoDownloaderTest {
         repoDto.setSrcUrl("https://mudex@bitbucket.org/mudex/sample.git");
 
 
-        String path = downloader.downloadRepoFilesAndGetPath(repoDto);
-        assertTrue(StringUtils.isNotBlank(path));
+        List<Parsable> path = downloader.downloadRepoFiles(repoDto, new ArrayList<>(),"cx");
+        assertTrue(path != null && !path.isEmpty());
     }
 
 
