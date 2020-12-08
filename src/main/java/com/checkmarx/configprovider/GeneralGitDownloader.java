@@ -75,12 +75,9 @@ public class GeneralGitDownloader {
         final File[] files;
         if (directory.isDirectory() && (files = directory.listFiles()) != null)
             Stream.of(files).forEach(this::delete);
-        try {
-            java.nio.file.Files.deleteIfExists(directory.toPath());
-        } catch (IOException e) {
-            log.error(String.format("couldn't delete file %s", directory.getAbsolutePath()));
-        }
 
+        if(!directory.delete())
+            log.warn(String.format("couldn't delete file %s", directory.getAbsolutePath()));
     }
 
     private class SSHTransportSession implements TransportConfigCallback {
