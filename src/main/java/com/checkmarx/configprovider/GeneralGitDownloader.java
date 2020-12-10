@@ -90,6 +90,7 @@ public class GeneralGitDownloader {
         List<Parsable> resources = new LinkedList<>();
         String workDirPath = downloadRepoFilesAndGetPath(repo);
 
+
         if (workDirPath.isEmpty())
             return Collections.EMPTY_LIST;
 
@@ -116,8 +117,12 @@ public class GeneralGitDownloader {
         List<String> resourceNames = resources.stream().map(resource -> ((ConfigReader) resource).getName().concat(" ")).collect(Collectors.toList());
 
         if (!resourceNames.isEmpty()) {
+            //repo url without user information if exists
+            String repoUrl = !repo.getSrcUrl().contains("@") ? repo.getSrcUrl() :
+                    repo.getSrcUrl().substring(repo.getSrcUrl().indexOf("@"));
+
             log.info("Config files " + resourceNames + "\nwere found for repo: " +
-                    repo.getSrcPass() +
+                    repoUrl +
                     " in folders: " + folders);
         }
         return resources;
