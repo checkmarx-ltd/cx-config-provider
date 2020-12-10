@@ -91,7 +91,7 @@ public class GeneralGitDownloader {
         String workDirPath = downloadRepoFilesAndGetPath(repo);
 
         if (workDirPath.isEmpty())
-            return null;
+            return Collections.EMPTY_LIST;
 
         //if folder set is empty then look for root folder
         if (folders.isEmpty() || (folders.size() == 1 && "/".equals(folders.get(0)))) {
