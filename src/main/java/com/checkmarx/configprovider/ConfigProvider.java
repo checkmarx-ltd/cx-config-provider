@@ -101,6 +101,23 @@ public class ConfigProvider {
         }
     }
 
+    public String getStringConfiguration(String uid, String configSection) {
+        if (!hasConfiguration(uid, configSection)) {
+            log.debug("No matching configuration for {} {}. returning null", uid, configSection);
+            return null;
+        }
+
+        log.info("reading configuration {} ", uid);
+        Config config = configurationMap.get(uid).root().toConfig();
+        if (!config.isResolved()) {
+            log.warn("reading configuration ({}) forced resolving the configuration", uid);
+            config = config.resolve();
+            store(uid, config);
+        }
+
+        return config.getString(configSection);
+    }
+
 
     /**
      * removes all cached config instances including the base instance

@@ -42,7 +42,7 @@ public class GeneralGitDownloader {
 
 
     private String downloadRepoFilesAndGetPath(GeneralRepoDto repoDto) {
-        log.debug(String.format("downloading configuration files from %s ,please wait ..",repoDto.getSrcUrl()));
+        log.debug(String.format("downloading configuration files from %s ,please wait ..", repoDto.getSrcUrl()));
         File temp = Files.createTempDir();
 
         CloneCommand cloneCommand = Git.cloneRepository()
