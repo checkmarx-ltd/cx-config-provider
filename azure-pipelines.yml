@@ -1,0 +1,14 @@
+steps:
+- task: Application security testing@2021
+displayName: Checkmarx Scan - $(System.TeamProject)/$(Build.Repository.Name)
+inputs:
+projectName: '$(Build.Repository.Name)'
+fullTeamName: "CxServer/$(System.TeamProject)"
+comment: '$(Build.SourceBranchName)'
+CheckmarxService: ${{ parameters.checkmarxInstance }}
+enableProxy: false
+enableSastScan: true
+preset: ${{ parameters.preset }}
+incScan: ${{ parameters.incScan }}
+vulnerabilityThreshold: ${{ parameters.vulnerabilityThreshold }}
+enableDependencyScan: false
