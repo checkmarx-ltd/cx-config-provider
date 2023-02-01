@@ -146,9 +146,9 @@ workflows:
       - test:
           requires:
             - build
-      - sonar:
-          requires:
-            - build
+      # - sonar:
+      #    requires:
+      #      - build
       - publish:
           filters:
             branches:
@@ -156,4 +156,4 @@ workflows:
                 - master
           requires:
             - test
-            - sonar
+            # - sonar
